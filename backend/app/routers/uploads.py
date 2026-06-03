@@ -9,7 +9,7 @@ from app.models.models import Upload, Analysis, Project
 from app.services.ai_service import analyze_photo, analyze_audio_note
 from app.services.schedule_service import update_stage_from_analysis
 
-UPLOAD_DIR = os.path.join(os.path.dirname(__file__), "../../uploads")
+UPLOAD_DIR = os.getenv("UPLOAD_DIR", os.path.join(os.path.dirname(__file__), "../../uploads"))
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 router = APIRouter(prefix="/api/uploads", tags=["uploads"])
