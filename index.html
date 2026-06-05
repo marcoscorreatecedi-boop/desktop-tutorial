@@ -91,7 +91,9 @@
     /* ── HERO ── */
     .hero {
       min-height: 100vh;
-      background: linear-gradient(160deg, #0D0C0A 0%, #1E1A14 40%, #0D0C0A 100%);
+      background:
+        linear-gradient(to bottom, rgba(13,12,10,0.55) 0%, rgba(13,12,10,0.45) 40%, rgba(13,12,10,0.75) 100%),
+        url('assets/hero.png') center/cover no-repeat;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -106,8 +108,7 @@
       position: absolute;
       inset: 0;
       background:
-        radial-gradient(ellipse 70% 50% at 50% 30%, rgba(201,169,110,0.08) 0%, transparent 70%),
-        radial-gradient(ellipse 40% 40% at 80% 70%, rgba(201,169,110,0.05) 0%, transparent 60%);
+        radial-gradient(ellipse 70% 50% at 50% 30%, rgba(201,169,110,0.06) 0%, transparent 70%);
     }
     .hero-grid {
       position: absolute;
@@ -528,6 +529,52 @@
       padding: 100px 0;
     }
     .ambientes-inner { max-width: 1240px; margin: 0 auto; padding: 0 48px; }
+    /* ── GALERIA FOTOS ── */
+    .galeria-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      grid-auto-rows: 220px;
+      gap: 4px;
+      margin-top: 60px;
+    }
+    .galeria-item {
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+    }
+    .galeria-item img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      transition: transform 0.55s ease;
+    }
+    .galeria-item:hover img { transform: scale(1.07); }
+    .galeria-label {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: linear-gradient(to top, rgba(13,12,10,0.85) 0%, transparent 100%);
+      padding: 20px 16px 12px;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .galeria-item:hover .galeria-label { opacity: 1; }
+    .galeria-item.span-8 { grid-column: span 8; }
+    .galeria-item.span-6 { grid-column: span 6; }
+    .galeria-item.span-4 { grid-column: span 4; }
+    .galeria-item.span-3 { grid-column: span 3; }
+    .galeria-item.row-2 { grid-row: span 2; }
+    @media (max-width: 768px) {
+      .galeria-grid { grid-template-columns: 1fr 1fr; grid-auto-rows: 180px; }
+      .galeria-item.span-8, .galeria-item.span-6 { grid-column: span 2; }
+      .galeria-item.span-4, .galeria-item.span-3 { grid-column: span 1; }
+    }
+
+    /* ── AMBIENTES (labels grid) ── */
     .ambientes-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -832,7 +879,7 @@
   <ul class="nav-links">
     <li><a href="#diferenciais">Diferenciais</a></li>
     <li><a href="#unidades">Unidades</a></li>
-    <li><a href="#ambientes">Ambientes</a></li>
+    <li><a href="#galeria">Galeria</a></li>
     <li><a href="#cadastro">Cadastro</a></li>
     <li><a href="#corretor">Corretores</a></li>
   </ul>
@@ -1126,13 +1173,80 @@
   </div>
 </div>
 
-<!-- AMBIENTES -->
-<div id="ambientes" class="ambientes-bg">
+<!-- GALERIA -->
+<div id="galeria" class="ambientes-bg">
   <div class="ambientes-inner">
-    <span class="section-tag">Ambientes</span>
-    <h2 class="section-title">Cada espaço<br>conta uma <em>história</em></h2>
-    <p class="section-body">Interiores projetados para integrar sofisticação e funcionalidade em cada metro quadrado.</p>
-    <div class="ambientes-grid">
+    <span class="section-tag">Galeria</span>
+    <h2 class="section-title">Imagens que<br>falam por <em>si</em></h2>
+    <p class="section-body">Perspectivas e renders exclusivos do Mykonos — fachada, interiores, varanda gourmet e coberturas duplex.</p>
+
+    <div class="galeria-grid">
+      <!-- linha 1 -->
+      <div class="galeria-item span-8 row-2">
+        <img src="assets/fachada-01.png" alt="Fachada Mykonos — Perspectiva Principal" loading="lazy" />
+        <div class="galeria-label">Fachada Principal</div>
+      </div>
+      <div class="galeria-item span-4">
+        <img src="assets/sala-01.png" alt="Sala Integrada" loading="lazy" />
+        <div class="galeria-label">Sala Integrada</div>
+      </div>
+      <div class="galeria-item span-4">
+        <img src="assets/varanda-01.png" alt="Varanda Gourmet" loading="lazy" />
+        <div class="galeria-label">Varanda Gourmet</div>
+      </div>
+
+      <!-- linha 2 -->
+      <div class="galeria-item span-4">
+        <img src="assets/cozinha-01.png" alt="Cozinha Gourmet" loading="lazy" />
+        <div class="galeria-label">Cozinha Gourmet</div>
+      </div>
+      <div class="galeria-item span-4">
+        <img src="assets/sala-02.png" alt="Sala de Estar" loading="lazy" />
+        <div class="galeria-label">Sala de Estar</div>
+      </div>
+      <div class="galeria-item span-4">
+        <img src="assets/varanda-02.png" alt="Varanda — Outro Ângulo" loading="lazy" />
+        <div class="galeria-label">Varanda</div>
+      </div>
+
+      <!-- linha 3 -->
+      <div class="galeria-item span-6 row-2">
+        <img src="assets/cobertura-02.png" alt="Cobertura — Terraço com Piscina" loading="lazy" />
+        <div class="galeria-label">Cobertura — Piscina Privativa</div>
+      </div>
+      <div class="galeria-item span-3">
+        <img src="assets/lavabo-01.png" alt="Lavabo" loading="lazy" />
+        <div class="galeria-label">Lavabo</div>
+      </div>
+      <div class="galeria-item span-3">
+        <img src="assets/banheiro-01.png" alt="Banheiro Suíte" loading="lazy" />
+        <div class="galeria-label">Banheiro Suíte</div>
+      </div>
+      <div class="galeria-item span-3">
+        <img src="assets/quarto-01.png" alt="Quarto Infantil" loading="lazy" />
+        <div class="galeria-label">Quarto Infantil</div>
+      </div>
+      <div class="galeria-item span-3">
+        <img src="assets/privativa-01.png" alt="Área Privativa — SPA" loading="lazy" />
+        <div class="galeria-label">Área Privativa SPA</div>
+      </div>
+
+      <!-- linha 4 -->
+      <div class="galeria-item span-4">
+        <img src="assets/fachada-02.png" alt="Fachada Lateral" loading="lazy" />
+        <div class="galeria-label">Fachada — Vista Lateral</div>
+      </div>
+      <div class="galeria-item span-4">
+        <img src="assets/cobertura-01.png" alt="Cobertura — Cozinha" loading="lazy" />
+        <div class="galeria-label">Cobertura — Gourmet</div>
+      </div>
+      <div class="galeria-item span-4">
+        <img src="assets/cobertura-03.png" alt="Cobertura — Vista Panorâmica" loading="lazy" />
+        <div class="galeria-label">Cobertura — Vista Panorâmica</div>
+      </div>
+    </div>
+
+    <div class="ambientes-grid" style="margin-top:4px;">
       <div class="amb-item"><span class="amb-emoji">🛋️</span><div class="amb-name">Sala Integrada</div></div>
       <div class="amb-item"><span class="amb-emoji">🍳</span><div class="amb-name">Cozinha Gourmet</div></div>
       <div class="amb-item"><span class="amb-emoji">🌿</span><div class="amb-name">Varanda</div></div>
@@ -1335,7 +1449,7 @@
       <ul>
         <li><a href="#diferenciais">Diferenciais</a></li>
         <li><a href="#unidades">Unidades</a></li>
-        <li><a href="#ambientes">Ambientes</a></li>
+        <li><a href="#galeria">Galeria</a></li>
         <li><a href="#cadastro">Cadastro</a></li>
         <li><a href="#corretor">Corretores</a></li>
       </ul>
