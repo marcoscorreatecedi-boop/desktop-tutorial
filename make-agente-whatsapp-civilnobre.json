@@ -1,0 +1,240 @@
+{
+  "name": "Agente WhatsApp Civilnobre",
+  "flow": [
+    {
+      "id": 1,
+      "module": "gateway:CustomWebHook",
+      "version": 1,
+      "parameters": {
+        "hook": 1,
+        "maxResults": 1
+      },
+      "mapper": {},
+      "metadata": {
+        "designer": {
+          "x": -361,
+          "y": 0
+        },
+        "restore": {
+          "parameters": {
+            "hook": {
+              "label": "Webhook Z-API Civilnobre"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "hook",
+            "type": "hook:gateway-webhook",
+            "label": "Webhook",
+            "required": true
+          },
+          {
+            "name": "maxResults",
+            "type": "number",
+            "label": "Maximum number of results"
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {
+        "handleErrors": false,
+        "useNewZLibDecompression": true
+      },
+      "mapper": {
+        "url": "https://api.anthropic.com/v1/messages",
+        "serializeUrl": false,
+        "method": "post",
+        "headers": [
+          {
+            "name": "x-api-key",
+            "value": "SUA_CHAVE_API_ANTHROPIC_AQUI"
+          },
+          {
+            "name": "anthropic-version",
+            "value": "2023-06-01"
+          },
+          {
+            "name": "content-type",
+            "value": "application/json"
+          }
+        ],
+        "qs": [],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "data": "{\"model\":\"claude-haiku-4-5-20251001\",\"max_tokens\":1024,\"system\":\"Você é o agente de triagem de mensagens WhatsApp da Civilnobre Engenharia e Império Nobre Imóveis, em Contagem/MG.\\n\\nAnalise a mensagem recebida. Responda APENAS com um JSON válido puro — sem markdown, sem blocos de código, sem texto antes ou depois do JSON.\\n\\nCampos obrigatórios:\\n- classificacao: SIMPLES ou IMPORTANTE\\n- resposta_automatica: mensagem profissional ao cliente (tom cordial, cite o empreendimento quando relevante)\\n- resumo_para_marcos: string vazia se SIMPLES, resumo curto se IMPORTANTE\\n- e_lead_novo: true ou false\\n\\nCritérios:\\nSIMPLES = saudações, agradecimentos, confirmações, perguntas genéricas com resposta direta, fornecedores rotineiros.\\nIMPORTANTE = lead novo, interesse real em compra ou investimento, solicitação de visita, negociação de preço, reclamação, proposta de negócio, pedido urgente.\\n\\nEmpreendimentos disponíveis:\\n- Mykonos: Av. Cruzeiro do Sul, Jardim Riacho das Pedras, 8 unidades, alto padrão\\n- Concórdia: 5 unidades disponíveis\\n- Pantheon: 6 unidades, Contagem\",\"messages\":[{\"role\":\"user\",\"content\":\"Número: {{1.phone}}\\nNome: {{1.senderName}}\\nMensagem: {{1.body}}\"}]}"
+      },
+      "metadata": {
+        "designer": {
+          "x": -61,
+          "y": 0
+        },
+        "restore": {},
+        "parameters": [
+          {
+            "name": "handleErrors",
+            "type": "boolean",
+            "label": "Evaluate all states as errors (except for 2xx and 3xx)"
+          },
+          {
+            "name": "useNewZLibDecompression",
+            "type": "boolean"
+          }
+        ]
+      },
+      "filter": {
+        "name": "Apenas mensagens recebidas de clientes",
+        "conditions": [
+          [
+            {
+              "a": "{{1.type}}",
+              "b": "ReceivedCallback",
+              "o": "text:equal"
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "module": "builtin:BasicRouter",
+      "version": 1,
+      "parameters": {},
+      "mapper": {},
+      "metadata": {
+        "designer": {
+          "x": 239,
+          "y": 0
+        }
+      },
+      "routes": [
+        {
+          "flow": [
+            {
+              "id": 4,
+              "module": "http:ActionSendData",
+              "version": 3,
+              "parameters": {
+                "handleErrors": false,
+                "useNewZLibDecompression": true
+              },
+              "mapper": {
+                "url": "https://api.z-api.io/instances/3F47FD4CAAA0C2319629FEA2481390B3/token/FB68420CAAE5D3D4E4B01DD3/send-text",
+                "serializeUrl": false,
+                "method": "post",
+                "headers": [
+                  {
+                    "name": "Client-Token",
+                    "value": "SEU_CLIENT_TOKEN_ZAPI_AQUI"
+                  },
+                  {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "qs": [],
+                "bodyType": "raw",
+                "parseResponse": true,
+                "contentType": "application/json",
+                "data": "{\"phone\":\"{{1.phone}}\",\"message\":\"{{parseJSON(2.data.content[1].text).resposta_automatica}}\"}"
+              },
+              "metadata": {
+                "designer": {
+                  "x": 539,
+                  "y": -200
+                }
+              },
+              "filter": {
+                "name": "SIMPLES — Resposta automática ao cliente",
+                "conditions": [
+                  [
+                    {
+                      "a": "{{parseJSON(2.data.content[1].text).classificacao}}",
+                      "b": "SIMPLES",
+                      "o": "text:equal"
+                    }
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "flow": [
+            {
+              "id": 5,
+              "module": "http:ActionSendData",
+              "version": 3,
+              "parameters": {
+                "handleErrors": false,
+                "useNewZLibDecompression": true
+              },
+              "mapper": {
+                "url": "https://api.z-api.io/instances/3F47FD4CAAA0C2319629FEA2481390B3/token/FB68420CAAE5D3D4E4B01DD3/send-text",
+                "serializeUrl": false,
+                "method": "post",
+                "headers": [
+                  {
+                    "name": "Client-Token",
+                    "value": "SEU_CLIENT_TOKEN_ZAPI_AQUI"
+                  },
+                  {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "qs": [],
+                "bodyType": "raw",
+                "parseResponse": true,
+                "contentType": "application/json",
+                "data": "{\"phone\":\"5531XXXXXXXXX\",\"message\":\"🚨 *LEAD IMPORTANTE*\\n\\n*De:* {{1.senderName}} (+{{1.phone}})\\n*Mensagem original:* {{1.body}}\\n\\n*Resumo:* {{parseJSON(2.data.content[1].text).resumo_para_marcos}}\\n\\n*Resposta sugerida pelo agente:*\\n{{parseJSON(2.data.content[1].text).resposta_automatica}}\"}"
+              },
+              "metadata": {
+                "designer": {
+                  "x": 539,
+                  "y": 200
+                }
+              },
+              "filter": {
+                "name": "IMPORTANTE — Alertar Marcos",
+                "conditions": [
+                  [
+                    {
+                      "a": "{{parseJSON(2.data.content[1].text).classificacao}}",
+                      "b": "IMPORTANTE",
+                      "o": "text:equal"
+                    }
+                  ]
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "instant": true,
+    "version": 1,
+    "scenario": {
+      "roundtrips": 1,
+      "maxErrors": 3,
+      "autoCommit": true,
+      "autoCommitTriggerLast": true,
+      "sequential": false,
+      "confidential": false,
+      "dataloss": false,
+      "dlq": false,
+      "freshVariables": false
+    },
+    "designer": {
+      "orphans": []
+    },
+    "zone": "us1.make.com"
+  }
+}

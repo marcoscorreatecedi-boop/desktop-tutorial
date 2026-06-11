@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agente WhatsApp — Civilnobre / Império Nobre Imóveis</title>
+  <style>
+    :root {
+      --gold: #b8860b;
+      --gold-light: #d4a017;
+      --dark: #1a1a2e;
+      --darker: #0f0f1a;
+      --card: #1e1e32;
+      --border: #2e2e4e;
+      --text: #e0e0f0;
+      --muted: #8888aa;
+      --green: #22c55e;
+      --yellow: #eab308;
+      --red: #ef4444;
+      --blue: #3b82f6;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--darker);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 2rem 1rem;
+    }
+    .container { max-width: 960px; margin: 0 auto; }
+
+    /* Header */
+    header {
+      text-align: center;
+      padding: 2.5rem 2rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      margin-bottom: 2rem;
+    }
+    header .logo-line {
+      font-size: 0.8rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.5rem;
+    }
+    header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    header h1 span { color: var(--gold-light); }
+    header p {
+      color: var(--muted);
+      margin-top: 0.5rem;
+      font-size: 0.95rem;
+    }
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-top: 1rem;
+    }
+    .badge-green { background: #14532d; color: #86efac; }
+    .badge-yellow { background: #713f12; color: #fde68a; }
+
+    /* Cards */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .card h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--gold-light);
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Status list */
+    .status-list { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+    .status-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      font-size: 0.9rem;
+    }
+    .status-list .icon { font-size: 1rem; flex-shrink: 0; margin-top: 0.1rem; }
+
+    /* Flow diagram */
+    .flow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      overflow-x: auto;
+      padding: 1rem 0;
+    }
+    .flow-node {
+      flex-shrink: 0;
+      background: var(--darker);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      text-align: center;
+      min-width: 110px;
+    }
+    .flow-node .icon { font-size: 1.5rem; display: block; margin-bottom: 0.25rem; }
+    .flow-node .label { font-size: 0.75rem; font-weight: 600; color: var(--text); }
+    .flow-node .sub { font-size: 0.65rem; color: var(--muted); margin-top: 0.15rem; }
+    .flow-arrow {
+      flex-shrink: 0;
+      font-size: 1.2rem;
+      color: var(--gold);
+      padding: 0 0.4rem;
+    }
+    .flow-split {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .flow-split .flow-node { min-width: 130px; }
+    .flow-node.green { border-color: #22c55e44; }
+    .flow-node.amber { border-color: #eab30844; }
+
+    /* Config steps */
+    .steps { display: flex; flex-direction: column; gap: 1rem; }
+    .step {
+      display: grid;
+      grid-template-columns: 2rem 1fr;
+      gap: 0.75rem;
+      align-items: start;
+    }
+    .step-num {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      background: var(--gold);
+      color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .step-content h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.3rem; }
+    .step-content p { font-size: 0.85rem; color: var(--muted); }
+    code {
+      background: var(--darker);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.15rem 0.4rem;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.8rem;
+      color: var(--gold-light);
+      word-break: break-all;
+    }
+    .highlight-field {
+      background: #1a1a10;
+      border: 1px solid #b8860b66;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+    }
+    .highlight-field strong { color: var(--gold-light); }
+
+    /* Fields table */
+    .fields-table { width: 100%; border-collapse: collapse; }
+    .fields-table th {
+      text-align: left;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+    .fields-table td {
+      padding: 0.65rem 0.75rem;
+      font-size: 0.85rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    .fields-table tr:last-child td { border-bottom: none; }
+    .fields-table .field-num {
+      color: var(--gold-light);
+      font-weight: 700;
+      font-size: 1rem;
+    }
+    .fields-table .placeholder {
+      color: var(--red);
+      font-family: monospace;
+    }
+
+    /* System prompt */
+    .prompt-box {
+      background: var(--darker);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.8rem;
+      color: #a0d0a0;
+      white-space: pre-wrap;
+      line-height: 1.7;
+    }
+
+    /* Empreendimentos */
+    .emps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+    .emp-card {
+      background: var(--darker);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem;
+    }
+    .emp-card h3 { color: var(--gold-light); font-size: 1rem; margin-bottom: 0.4rem; }
+    .emp-card p { font-size: 0.8rem; color: var(--muted); }
+    .emp-card .units {
+      display: inline-block;
+      margin-top: 0.5rem;
+      padding: 0.2rem 0.6rem;
+      background: #1e2e1e;
+      color: #86efac;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+
+    /* Next steps */
+    .todo { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+    .todo li {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+      font-size: 0.9rem;
+    }
+    .todo .chk {
+      width: 1.1rem;
+      height: 1.1rem;
+      border: 2px solid var(--border);
+      border-radius: 3px;
+      flex-shrink: 0;
+      margin-top: 0.2rem;
+    }
+    .todo li.done .chk {
+      background: var(--green);
+      border-color: var(--green);
+    }
+
+    /* Instance info */
+    .instance-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+    .instance-item {
+      background: var(--darker);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem;
+    }
+    .instance-item .key { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.3rem; }
+    .instance-item .val { font-size: 0.8rem; font-family: monospace; color: var(--gold-light); word-break: break-all; }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.78rem;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <header>
+    <div class="logo-line">Civilnobre Engenharia · Império Nobre Imóveis · Contagem/MG</div>
+    <h1>Agente de Triagem <span>WhatsApp</span></h1>
+    <p>Automação inteligente: Z-API → Make.com → Claude API → Notion</p>
+    <span class="badge badge-green">✅ Z-API Conectado</span>
+    <span class="badge badge-yellow">⏳ Make.com — 4 campos pendentes</span>
+  </header>
+
+  <!-- Status atual -->
+  <div class="card">
+    <h2>📋 Status do Projeto</h2>
+    <ul class="status-list">
+      <li><span class="icon">✅</span><span>Z-API configurado e conectado — instância criada em 11/06/2026</span></li>
+      <li><span class="icon">✅</span><span>Blueprint Make.com gerado — 5 módulos prontos para importar</span></li>
+      <li><span class="icon">✅</span><span>Prompt do agente configurado com os 3 empreendimentos</span></li>
+      <li><span class="icon">✅</span><span>Lógica de triagem SIMPLES / IMPORTANTE definida</span></li>
+      <li><span class="icon">⏳</span><span>Importar blueprint no Make.com e preencher 4 campos</span></li>
+      <li><span class="icon">⏳</span><span>Registrar URL do webhook no painel Z-API</span></li>
+      <li><span class="icon">⏳</span><span>Adicionar módulo Notion ao final do fluxo</span></li>
+      <li><span class="icon">⚠️</span><span>Trial Z-API expira em ~2 dias — assinar plano para produção</span></li>
+    </ul>
+  </div>
+
+  <!-- Instância Z-API -->
+  <div class="card">
+    <h2>📱 Instância Z-API</h2>
+    <div class="instance-grid">
+      <div class="instance-item">
+        <div class="key">Instance ID</div>
+        <div class="val">3F47FD4CAAA0C2319629FEA2481390B3</div>
+      </div>
+      <div class="instance-item">
+        <div class="key">Token</div>
+        <div class="val">FB68420CAAE5D3D4E4B01DD3</div>
+      </div>
+      <div class="instance-item">
+        <div class="key">Endpoint send-text</div>
+        <div class="val">api.z-api.io/instances/{id}/token/{token}/send-text</div>
+      </div>
+      <div class="instance-item">
+        <div class="key">Filtro no Make.com</div>
+        <div class="val">type == "ReceivedCallback"</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fluxo -->
+  <div class="card">
+    <h2>🔄 Fluxo de Automação</h2>
+    <div class="flow">
+      <div class="flow-node">
+        <span class="icon">📲</span>
+        <div class="label">WhatsApp</div>
+        <div class="sub">Mensagem entra</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <span class="icon">🔗</span>
+        <div class="label">Z-API</div>
+        <div class="sub">Webhook dispara</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <span class="icon">⚙️</span>
+        <div class="label">Make.com</div>
+        <div class="sub">Webhook recebe</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <span class="icon">🤖</span>
+        <div class="label">Claude API</div>
+        <div class="sub">Classifica</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <span class="icon">🔀</span>
+        <div class="label">Roteador</div>
+        <div class="sub">SIMPLES / IMP.</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-split">
+        <div class="flow-node green">
+          <span class="icon">✉️</span>
+          <div class="label">Resposta Auto</div>
+          <div class="sub">→ Cliente</div>
+        </div>
+        <div class="flow-node amber">
+          <span class="icon">🚨</span>
+          <div class="label">Alerta Marcos</div>
+          <div class="sub">→ 5531XXXX</div>
+        </div>
+      </div>
+    </div>
+    <p style="font-size:0.8rem;color:var(--muted);margin-top:0.75rem;">
+      Próximo passo: adicionar módulo Notion após o roteador para salvar leads novos
+      (<code>e_lead_novo == true</code>).
+    </p>
+  </div>
+
+  <!-- 4 campos pendentes -->
+  <div class="card">
+    <h2>🔧 4 Campos para Preencher no Make.com</h2>
+    <table class="fields-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Campo</th>
+          <th>Onde fica</th>
+          <th>Valor / Ação</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="field-num">1</td>
+          <td><strong>Webhook ID</strong></td>
+          <td>Módulo 1 — Custom Webhook</td>
+          <td>Ao importar o blueprint, Make.com pergunta: clique em <em>"Create a webhook"</em>. Copie a URL gerada.</td>
+        </tr>
+        <tr>
+          <td class="field-num">2</td>
+          <td><strong>Anthropic API Key</strong></td>
+          <td>Módulo 2 — HTTP, header <code>x-api-key</code></td>
+          <td>Substitua <code class="placeholder">SUA_CHAVE_API_ANTHROPIC_AQUI</code> pela sua chave da console.anthropic.com</td>
+        </tr>
+        <tr>
+          <td class="field-num">3</td>
+          <td><strong>Número do Marcos</strong></td>
+          <td>Módulo 5 — Z-API send-text (rota IMPORTANTE), campo <code>phone</code></td>
+          <td>Substitua <code class="placeholder">5531XXXXXXXXX</code> pelo número real no formato <code>5531999999999</code></td>
+        </tr>
+        <tr>
+          <td class="field-num">4</td>
+          <td><strong>URL do Webhook → Z-API</strong></td>
+          <td>Painel Z-API → "Configurar agora" / Webhooks</td>
+          <td>Cole a URL copiada no passo 1 no campo <em>Webhook de Mensagens Recebidas</em> do painel Z-API</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="highlight-field" style="margin-top:1rem;">
+      <strong>Client-Token Z-API (opcional, recomendado):</strong><br/>
+      Nos módulos 4 e 5 (send-text), substitua <code class="placeholder">SEU_CLIENT_TOKEN_ZAPI_AQUI</code> pelo
+      Security Token exibido no painel Z-API em <em>Configurações → Security Token</em>.
+      Se não quiser usar, remova o header.
+    </div>
+  </div>
+
+  <!-- Passo a passo de importação -->
+  <div class="card">
+    <h2>🚀 Passo a Passo — Importar no Make.com</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h3>Acesse o Make.com e crie um novo Scenario</h3>
+          <p>Clique em <em>Create a new scenario</em> → botão <em>…</em> (três pontos) → <em>Import Blueprint</em> → selecione o arquivo <code>make-agente-whatsapp-civilnobre.json</code>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h3>Criar o webhook (Módulo 1)</h3>
+          <p>Make.com pedirá para selecionar ou criar um hook. Clique em <em>Create a webhook</em>, dê o nome <strong>"Webhook Z-API Civilnobre"</strong> e copie a URL gerada (algo como <code>https://hook.eu1.make.com/abc123...</code>).</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h3>Preencher a Anthropic API Key (Módulo 2)</h3>
+          <p>No módulo HTTP (Claude API), localize o header <code>x-api-key</code> e substitua o placeholder pela sua chave real. Obtenha em <code>console.anthropic.com → API Keys</code>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <h3>Preencher o número do Marcos (Módulo 5)</h3>
+          <p>No módulo HTTP da rota IMPORTANTE (alerta), edite o campo <code>data</code> e substitua <code>5531XXXXXXXXX</code> pelo número real, sem espaços ou traços, começando com 55.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <h3>Registrar o webhook no Z-API</h3>
+          <p>No painel Z-API, vá em <em>Webhooks</em> → cole a URL do passo 2 em <strong>Webhook de Mensagens Recebidas</strong> (on-receive). Salve. O botão "Configurar agora" fica visível quando nenhum webhook está cadastrado.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-content">
+          <h3>Ativar o Scenario e testar</h3>
+          <p>Ligue o toggle do Scenario no Make.com (ON). Envie uma mensagem de teste para o número Z-API pelo WhatsApp de outro celular. Verifique o histórico de execuções no Make.com.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empreendimentos -->
+  <div class="card">
+    <h2>🏙️ Empreendimentos no Prompt do Agente</h2>
+    <div class="emps">
+      <div class="emp-card">
+        <h3>Mykonos</h3>
+        <p>Av. Cruzeiro do Sul<br/>Jardim Riacho das Pedras<br/>Alto padrão</p>
+        <span class="units">8 unidades disponíveis</span>
+      </div>
+      <div class="emp-card">
+        <h3>Concórdia</h3>
+        <p>Contagem/MG</p>
+        <span class="units">5 unidades disponíveis</span>
+      </div>
+      <div class="emp-card">
+        <h3>Pantheon</h3>
+        <p>Contagem/MG</p>
+        <span class="units">6 unidades disponíveis</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- System prompt preview -->
+  <div class="card">
+    <h2>🤖 System Prompt do Agente (preview)</h2>
+    <div class="prompt-box">Você é o agente de triagem de mensagens WhatsApp da Civilnobre Engenharia
+e Império Nobre Imóveis, em Contagem/MG.
+
+Analise a mensagem recebida. Responda APENAS com um JSON válido puro —
+sem markdown, sem blocos de código, sem texto antes ou depois do JSON.
+
+Campos obrigatórios:
+- classificacao: SIMPLES ou IMPORTANTE
+- resposta_automatica: mensagem profissional ao cliente (cite o empreendimento quando relevante)
+- resumo_para_marcos: string vazia se SIMPLES, resumo curto se IMPORTANTE
+- e_lead_novo: true ou false
+
+Critérios:
+SIMPLES = saudações, agradecimentos, confirmações, perguntas genéricas, fornecedores rotineiros.
+IMPORTANTE = lead novo, interesse em compra, solicitação de visita, negociação,
+             reclamação, proposta urgente.
+
+Empreendimentos:
+- Mykonos: Av. Cruzeiro do Sul, Jardim Riacho das Pedras, 8 unidades, alto padrão
+- Concórdia: 5 unidades disponíveis
+- Pantheon: 6 unidades, Contagem</div>
+    <p style="font-size:0.8rem;color:var(--muted);margin-top:0.75rem;">
+      Modelo usado: <code>claude-haiku-4-5-20251001</code> — rápido e econômico para triagem.
+      Pode ser alterado para <code>claude-sonnet-4-6</code> para respostas mais elaboradas.
+    </p>
+  </div>
+
+  <!-- Módulo Notion (próximo passo) -->
+  <div class="card">
+    <h2>📓 Próximo Passo — Módulo Notion (salvar leads)</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">+</div>
+        <div class="step-content">
+          <h3>Adicionar módulo Notion após o Roteador</h3>
+          <p>
+            Em ambas as rotas (ou como módulo paralelo), adicione
+            <em>Notion → Create a database item</em> com um filtro
+            <code>e_lead_novo == true</code> para salvar apenas leads novos.<br/><br/>
+            Campos sugeridos na database Notion:
+          </p>
+          <div class="highlight-field">
+            <strong>Nome</strong>: <code>{{1.senderName}}</code><br/>
+            <strong>Telefone</strong>: <code>{{1.phone}}</code><br/>
+            <strong>Mensagem</strong>: <code>{{1.body}}</code><br/>
+            <strong>Classificação</strong>: <code>{{parseJSON(2.data.content[1].text).classificacao}}</code><br/>
+            <strong>Resumo</strong>: <code>{{parseJSON(2.data.content[1].text).resumo_para_marcos}}</code><br/>
+            <strong>Data</strong>: <code>{{now}}</code>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Próximos passos / checklist -->
+  <div class="card">
+    <h2>✅ Checklist de Implantação</h2>
+    <ul class="todo">
+      <li class="done"><span class="chk"></span>Criar instância Z-API e conectar WhatsApp</li>
+      <li class="done"><span class="chk"></span>Gerar blueprint Make.com com 5 módulos</li>
+      <li class="done"><span class="chk"></span>Definir prompt do agente com empreendimentos</li>
+      <li><span class="chk"></span>Importar blueprint no Make.com</li>
+      <li><span class="chk"></span>Preencher os 4 campos pendentes</li>
+      <li><span class="chk"></span>Registrar URL do webhook no painel Z-API</li>
+      <li><span class="chk"></span>Testar com mensagem real (SIMPLES e IMPORTANTE)</li>
+      <li><span class="chk"></span>Adicionar módulo Notion para salvar leads</li>
+      <li><span class="chk"></span>Assinar plano Z-API (trial expira em ~2 dias)</li>
+      <li><span class="chk"></span>Monitorar primeiras 48h e ajustar critérios de classificação</li>
+    </ul>
+  </div>
+
+  <footer>
+    Gerado em 11/06/2026 · Civilnobre Engenharia / Império Nobre Imóveis · Contagem/MG
+  </footer>
+
+</div>
+</body>
+</html>
