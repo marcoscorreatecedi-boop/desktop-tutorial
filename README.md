@@ -59,7 +59,26 @@ A cada mensagem recebida, o histórico da conversa e o estágio atual do contato
 
 Para mudar o texto/comportamento do agente de vendas, edite o prompt em `src/claude.js` (`buildSystemPrompt`).
 
-## 6. Produção
+## 6. Deploy 100% pelo celular (sem usar computador)
+
+Este repositório já inclui um `render.yaml`, então você pode publicar direto pelo navegador do celular, sem instalar nada:
+
+1. Acesse [render.com](https://render.com) no navegador do celular e crie uma conta (pode ser com login do GitHub).
+2. Toque em **New > Blueprint** e conecte sua conta do GitHub, escolhendo o repositório `desktop-tutorial` (branch `claude/whatsapp-funnel-ai-plugin-cimhkj`).
+3. O Render vai detectar o `render.yaml` automaticamente e pedir para preencher as variáveis de ambiente:
+   - `WHATSAPP_VERIFY_TOKEN` — invente uma senha
+   - `WHATSAPP_TOKEN` — token copiado no Meta for Developers
+   - `WHATSAPP_PHONE_NUMBER_ID` — id copiado no Meta for Developers
+   - `ANTHROPIC_API_KEY` — sua chave da Anthropic
+4. Toque em **Apply/Deploy**. Em alguns minutos o Render gera uma URL pública, tipo `https://whatsapp-funnel-ai.onrender.com`.
+5. Volte no Meta for Developers (também pelo navegador do celular) e configure o Webhook com:
+   - URL: `https://whatsapp-funnel-ai.onrender.com/webhook`
+   - Verify Token: o mesmo que você colocou em `WHATSAPP_VERIFY_TOKEN`
+6. Pronto — não precisa de computador, ngrok nem nada rodando localmente. O dashboard fica em `https://whatsapp-funnel-ai.onrender.com/dashboard`.
+
+> No plano free do Render o serviço "dorme" depois de um tempo sem uso e demora alguns segundos para acordar na próxima mensagem. Se isso for um problema, dá para trocar para um plano pago ou usar o Railway (também tem importação de blueprint similar).
+
+## 7. Produção
 
 - Use um **token de acesso permanente** (via System User no Business Manager), não o temporário de 24h.
 - Hospede o servidor em qualquer provedor com HTTPS (Render, Railway, Fly.io, VPS, etc.).
