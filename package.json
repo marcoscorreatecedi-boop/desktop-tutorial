@@ -1,0 +1,16 @@
+{
+  "name": "whatsapp-funnel-ai",
+  "version": "1.0.0",
+  "description": "Bot de WhatsApp (Cloud API oficial) que organiza contatos em um funil de vendas e responde automaticamente usando Claude (Anthropic).",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.1",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1"
+  }
+}
