@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8" />
+<title>Funil de WhatsApp</title>
+<style>
+  body { font-family: system-ui, sans-serif; background: #f2f3f5; margin: 0; padding: 24px; }
+  h1 { margin-bottom: 16px; }
+  .board { display: flex; gap: 12px; overflow-x: auto; }
+  .column { background: #fff; border-radius: 8px; padding: 12px; min-width: 220px; flex: 1; }
+  .column h2 { font-size: 14px; text-transform: uppercase; color: #555; margin: 0 0 12px; }
+  .card { background: #f7f7f9; border-radius: 6px; padding: 10px; margin-bottom: 8px; box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+  .card .name { font-weight: 600; }
+  .card .phone { font-size: 12px; color: #777; }
+  .card .last { font-size: 12px; color: #444; margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .count { color: #888; font-weight: normal; }
+</style>
+</head>
+<body>
+  <h1>Funil de vendas — WhatsApp</h1>
+  <div id="board" class="board"></div>
+
+  <script>
+    async function load() {
+      const res = await fetch('/api/contacts');
+      const { stages, stageLabels, contacts } = await res.json();
+
+      const board = document.getElementById('board');
+      board.innerHTML = '';
+
+      stages.forEach((stage) => {
+        const inStage = contacts.filter((c) => c.stage === stage);
+        const col = document.createElement('div');
+        col.className = 'column';
+        col.innerHTML = `<h2>${stageLabels[stage] || stage} <span class="count">(${inStage.length})</span></h2>`;
+
+        inStage.forEach((contact) => {
+          const lastMsg = contact.history?.[contact.history.length - 1]?.content || '';
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.innerHTML = `
+            <div class="name">${contact.name || 'Sem nome'}</div>
+            <div class="phone">${contact.waId}</div>
+            <div class="last">${lastMsg}</div>
+          `;
+          col.appendChild(card);
+        });
+
+        board.appendChild(col);
+      });
+    }
+
+    load();
+    setInterval(load, 5000);
+  </script>
+</body>
+</html>
