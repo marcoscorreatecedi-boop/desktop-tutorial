@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8" />
+<title>Painel de Atendimento WhatsApp</title>
+<style>
+  :root { --green: #25D366; --dark: #075E54; --bg: #f0f2f5; }
+  * { box-sizing: border-box; }
+  body { font-family: Arial, sans-serif; margin: 0; background: var(--bg); color: #222; }
+  header { background: var(--dark); color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; }
+  header h1 { font-size: 18px; margin: 0; }
+  .layout { display: grid; grid-template-columns: 320px 1fr 320px; height: calc(100vh - 50px); }
+  .panel { overflow-y: auto; border-right: 1px solid #ddd; background: white; }
+  .panel:last-child { border-right: none; }
+  .filters { padding: 10px; display: flex; gap: 6px; flex-wrap: wrap; border-bottom: 1px solid #eee; }
+  select, input, button { padding: 6px; border-radius: 4px; border: 1px solid #ccc; font-size: 13px; }
+  button { background: var(--green); color: white; border: none; cursor: pointer; }
+  button:hover { opacity: .9; }
+  .conv-item { padding: 10px 14px; border-bottom: 1px solid #eee; cursor: pointer; }
+  .conv-item:hover { background: #f7f7f7; }
+  .conv-item.active { background: #e8f8ee; }
+  .badge { display: inline-block; font-size: 11px; padding: 2px 6px; border-radius: 10px; margin-right: 4px; color: white; }
+  .b-aberta { background: #e74c3c; }
+  .b-pendente { background: #f39c12; }
+  .b-resolvida { background: #27ae60; }
+  .b-cat { background: #3498db; }
+  .messages { display: flex; flex-direction: column; height: 100%; }
+  .msg-list { flex: 1; overflow-y: auto; padding: 14px; }
+  .msg { max-width: 60%; margin-bottom: 8px; padding: 8px 12px; border-radius: 8px; font-size: 14px; }
+  .msg.inbound { background: white; align-self: flex-start; }
+  .msg.outbound { background: #dcf8c6; align-self: flex-end; margin-left: auto; }
+  .reply-box { display: flex; gap: 6px; padding: 10px; border-top: 1px solid #ddd; }
+  .reply-box input { flex: 1; }
+  .metrics { padding: 14px; }
+  .metric-card { background: white; border-radius: 6px; padding: 10px; margin-bottom: 10px; box-shadow: 0 1px 2px rgba(0,0,0,.1); }
+  .metric-card .value { font-size: 22px; font-weight: bold; }
+  .metric-card .label { font-size: 12px; color: #666; }
+  .quick-replies { padding: 10px; border-top: 1px solid #ddd; }
+  .quick-replies button { margin: 2px; font-size: 11px; background: #34495e; }
+  .conv-actions { padding: 8px 14px; display: flex; gap: 6px; border-bottom: 1px solid #ddd; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Painel de Atendimento WhatsApp</h1>
+  <span id="sla-info"></span>
+</header>
+<div class="layout">
+  <div class="panel" id="conv-panel">
+    <div class="filters">
+      <select id="f-status">
+        <option value="">Todos status</option>
+        <option value="aberta">Aberta</option>
+        <option value="pendente">Pendente</option>
+        <option value="resolvida">Resolvida</option>
+      </select>
+      <select id="f-category">
+        <option value="">Todas categorias</option>
+        <option value="vendas">Vendas</option>
+        <option value="suporte">Suporte</option>
+        <option value="financeiro">Financeiro</option>
+        <option value="sem_classificacao">Sem classificação</option>
+      </select>
+    </div>
+    <div id="conv-list"></div>
+  </div>
+
+  <div class="panel messages">
+    <div class="conv-actions" id="conv-actions" style="display:none;">
+      <select id="status-select"></select>
+      <select id="category-select"></select>
+      <select id="agent-select"></select>
+    </div>
+    <div class="msg-list" id="msg-list"><p style="padding:20px;color:#888;">Selecione uma conversa</p></div>
+    <div class="quick-replies" id="quick-replies"></div>
+    <div class="reply-box">
+      <input id="reply-input" placeholder="Digite uma resposta..." />
+      <button id="send-btn">Enviar</button>
+    </div>
+  </div>
+
+  <div class="panel metrics" id="metrics-panel"></div>
+</div>
+
+<script>
+let currentConversation = null;
+let quickReplies = [];
+
+async function api(path, opts) {
+  const res = await fetch(path, opts);
+  return res.json();
+}
+
+async function loadConversations() {
+  const status = document.getElementById('f-status').value;
+  const category = document.getElementById('f-category').value;
+  const params = new URLSearchParams();
+  if (status) params.set('status', status);
+  if (category) params.set('category', category);
+  const list = await api('/api/conversations?' + params.toString());
+  const el = document.getElementById('conv-list');
+  el.innerHTML = list.map(c => `
+    <div class="conv-item" data-id="${c.id}" onclick="openConversation(${c.id})">
+      <strong>${c.contact_name || c.wa_id}</strong><br/>
+      <span class="badge b-${c.status}">${c.status}</span>
+      <span class="badge b-cat">${c.category}</span>
+      <div style="font-size:11px;color:#888;">${c.agent_name || 'sem agente'} · ${c.last_message_at || ''}</div>
+    </div>`).join('') || '<p style="padding:14px;color:#888;">Nenhuma conversa</p>';
+}
+
+async function openConversation(id) {
+  currentConversation = id;
+  document.querySelectorAll('.conv-item').forEach(e => e.classList.toggle('active', e.dataset.id === String(id)));
+  document.getElementById('conv-actions').style.display = 'flex';
+
+  const conv = (await api('/api/conversations')).find(c => c.id === id);
+  const statusSel = document.getElementById('status-select');
+  statusSel.innerHTML = ['aberta','pendente','resolvida'].map(s => `<option value="${s}" ${s===conv.status?'selected':''}>${s}</option>`).join('');
+  statusSel.onchange = async () => { await api(`/api/conversations/${id}/status`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({status: statusSel.value})}); loadConversations(); loadMetrics(); };
+
+  const catSel = document.getElementById('category-select');
+  catSel.innerHTML = ['vendas','suporte','financeiro','sem_classificacao'].map(s => `<option value="${s}" ${s===conv.category?'selected':''}>${s}</option>`).join('');
+  catSel.onchange = async () => { await api(`/api/conversations/${id}/category`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({category: catSel.value})}); loadConversations(); };
+
+  const agents = await api('/api/agents');
+  const agentSel = document.getElementById('agent-select');
+  agentSel.innerHTML = '<option value="">Sem agente</option>' + agents.map(a => `<option value="${a.id}" ${a.id===conv.agent_id?'selected':''}>${a.name}</option>`).join('');
+  agentSel.onchange = async () => { await api(`/api/conversations/${id}/assign`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({agent_id: agentSel.value || null})}); loadConversations(); };
+
+  await loadMessages(id);
+}
+
+async function loadMessages(id) {
+  const msgs = await api(`/api/conversations/${id}/messages`);
+  const el = document.getElementById('msg-list');
+  el.innerHTML = msgs.map(m => `<div class="msg ${m.direction}">${m.body}</div>`).join('') || '<p style="color:#888;">Sem mensagens</p>';
+  el.scrollTop = el.scrollHeight;
+}
+
+async function loadQuickReplies() {
+  quickReplies = await api('/api/quick-replies');
+  document.getElementById('quick-replies').innerHTML = quickReplies.map(q =>
+    `<button onclick="document.getElementById('reply-input').value=${JSON.stringify(q.body)}">${q.shortcut}</button>`
+  ).join('');
+}
+
+document.getElementById('send-btn').onclick = async () => {
+  if (!currentConversation) return alert('Selecione uma conversa');
+  const input = document.getElementById('reply-input');
+  if (!input.value.trim()) return;
+  const result = await api(`/api/conversations/${currentConversation}/reply`, {
+    method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({body: input.value})
+  });
+  if (result.error) return alert(result.error);
+  input.value = '';
+  await loadMessages(currentConversation);
+  await loadConversations();
+};
+
+document.getElementById('f-status').onchange = loadConversations;
+document.getElementById('f-category').onchange = loadConversations;
+
+async function loadMetrics() {
+  const m = await api('/api/metrics');
+  document.getElementById('sla-info').textContent = `SLA: ${m.slaMinutos} min · Atrasadas: ${m.atrasadas}`;
+  document.getElementById('metrics-panel').innerHTML = `
+    <div class="metric-card"><div class="value">${m.total}</div><div class="label">Total de conversas</div></div>
+    <div class="metric-card"><div class="value">${m.totalAbertas}</div><div class="label">Abertas</div></div>
+    <div class="metric-card"><div class="value">${m.totalPendentes}</div><div class="label">Pendentes (aguardando cliente)</div></div>
+    <div class="metric-card"><div class="value">${m.totalResolvidas}</div><div class="label">Resolvidas</div></div>
+    <div class="metric-card"><div class="value">${m.taxaResolucao}%</div><div class="label">Taxa de resolução</div></div>
+    <div class="metric-card"><div class="value">${m.tempoMedioRespostaMin ?? '-'} min</div><div class="label">Tempo médio até 1ª resposta</div></div>
+    <div class="metric-card"><div class="value">${m.tempoMedioResolucaoMin ?? '-'} min</div><div class="label">Tempo médio de resolução</div></div>
+    <div class="metric-card"><div class="value" style="color:#e74c3c;">${m.atrasadas}</div><div class="label">Conversas fora do SLA</div></div>
+    <div class="metric-card">
+      <div class="label">Por categoria</div>
+      ${m.porCategoria.map(c => `<div>${c.category}: <strong>${c.total}</strong></div>`).join('')}
+    </div>
+  `;
+}
+
+loadConversations();
+loadQuickReplies();
+loadMetrics();
+setInterval(() => { loadConversations(); loadMetrics(); }, 15000);
+</script>
+</body>
+</html>
