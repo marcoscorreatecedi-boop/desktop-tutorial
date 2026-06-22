@@ -18,6 +18,13 @@ db.exec(`
     active INTEGER DEFAULT 1
   );
 
+  CREATE TABLE IF NOT EXISTS empreendimentos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT UNIQUE NOT NULL,
+    ativo INTEGER DEFAULT 1,
+    created_at TEXT DEFAULT (datetime('now'))
+  );
+
   CREATE TABLE IF NOT EXISTS conversations (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     contact_id INTEGER NOT NULL REFERENCES contacts(id),
@@ -49,6 +56,22 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_messages_conversation ON messages(conversation_id);
   CREATE INDEX IF NOT EXISTS idx_conversations_status ON conversations(status);
 `);
+
+function ensureColumn(table, column, definition) {
+  const cols = db.prepare(`PRAGMA table_info(${table})`).all();
+  if (!cols.some((c) => c.name === column)) {
+    db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
+  }
+}
+
+// Funil de vendas / leads
+ensureColumn('conversations', 'funnel_stage', "TEXT DEFAULT 'novo_lead'");
+ensureColumn('conversations', 'empreendimento_id', 'INTEGER REFERENCES empreendimentos(id)');
+ensureColumn('conversations', 'source', "TEXT DEFAULT 'whatsapp_direto'");
+ensureColumn('conversations', 'bot_state', "TEXT DEFAULT 'aguardando_empreendimento'");
+ensureColumn('conversations', 'bot_retries', 'INTEGER DEFAULT 0');
+
+db.exec('CREATE INDEX IF NOT EXISTS idx_conversations_funnel ON conversations(funnel_stage)');
 
 const defaultReplies = [
   ['ola', 'Olá! Obrigado por entrar em contato. Em que posso ajudar?'],

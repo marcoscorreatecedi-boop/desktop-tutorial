@@ -4,6 +4,8 @@ const path = require('path');
 const db = require('./db');
 const { sendTextMessage } = require('./whatsapp');
 const { classifyMessage } = require('./classify');
+const bot = require('./bot');
+const { FUNNEL_STAGES, SOURCES } = require('./constants');
 
 const app = express();
 app.use(express.json());
@@ -45,6 +47,13 @@ function nextAgentRoundRobin() {
   return idle ? idle.id : leastBusyId;
 }
 
+function extractText(msg) {
+  if (msg.type === 'text') return msg.text?.body || '';
+  if (msg.type === 'interactive') return msg.interactive?.list_reply?.title || msg.interactive?.button_reply?.title || '';
+  if (msg.type === 'button') return msg.button?.text || '';
+  return '';
+}
+
 // --- Webhook verification (Meta) ---
 app.get('/webhook', (req, res) => {
   const mode = req.query['hub.mode'];
@@ -57,7 +66,7 @@ app.get('/webhook', (req, res) => {
 });
 
 // --- Webhook: incoming messages ---
-app.post('/webhook', (req, res) => {
+app.post('/webhook', async (req, res) => {
   try {
     const entry = req.body.entry?.[0];
     const change = entry?.changes?.[0]?.value;
@@ -66,19 +75,21 @@ app.post('/webhook', (req, res) => {
 
     for (const msg of messages) {
       const waId = msg.from;
-      const text = msg.text?.body || '';
+      const text = extractText(msg);
       const contactName = change.contacts?.[0]?.profile?.name;
 
       const contact = getOrCreateContact(waId, contactName);
       let conversation = getOpenConversation(contact.id);
+      let isNewConversation = false;
 
       if (!conversation) {
+        isNewConversation = true;
         const category = classifyMessage(text) || 'sem_classificacao';
         const agentId = nextAgentRoundRobin();
         const { lastInsertRowid } = db
           .prepare(
-            `INSERT INTO conversations (contact_id, status, category, agent_id, last_message_at, last_inbound_at)
-             VALUES (?, 'aberta', ?, ?, datetime('now'), datetime('now'))`
+            `INSERT INTO conversations (contact_id, status, category, agent_id, last_message_at, last_inbound_at, bot_state)
+             VALUES (?, 'aberta', ?, ?, datetime('now'), datetime('now'), 'novo')`
           )
           .run(contact.id, category, agentId);
         conversation = db.prepare('SELECT * FROM conversations WHERE id = ?').get(lastInsertRowid);
@@ -95,6 +106,14 @@ app.post('/webhook', (req, res) => {
       db.prepare(
         "INSERT INTO messages (conversation_id, direction, body, wa_message_id) VALUES (?, 'inbound', ?, ?)"
       ).run(conversation.id, text, msg.id);
+
+      if (conversation.bot_state !== 'concluido') {
+        try {
+          await bot.processarMensagem({ conversation, contact, msg, text, referral: msg.referral });
+        } catch (err) {
+          console.error('Erro no bot:', err.response?.data || err.message);
+        }
+      }
     }
 
     res.sendStatus(200);
@@ -104,20 +123,24 @@ app.post('/webhook', (req, res) => {
   }
 });
 
-// --- API: listar conversas (com filtros) ---
+// --- API: listar conversas/leads (com filtros) ---
 app.get('/api/conversations', (req, res) => {
-  const { status, category, agent_id } = req.query;
+  const { status, category, agent_id, funnel_stage, empreendimento_id, source } = req.query;
   let query = `
-    SELECT c.*, ct.name as contact_name, ct.wa_id, a.name as agent_name
+    SELECT c.*, ct.name as contact_name, ct.wa_id, a.name as agent_name, e.nome as empreendimento_nome
     FROM conversations c
     JOIN contacts ct ON ct.id = c.contact_id
     LEFT JOIN agents a ON a.id = c.agent_id
+    LEFT JOIN empreendimentos e ON e.id = c.empreendimento_id
     WHERE 1=1
   `;
   const params = [];
   if (status) { query += ' AND c.status = ?'; params.push(status); }
   if (category) { query += ' AND c.category = ?'; params.push(category); }
   if (agent_id) { query += ' AND c.agent_id = ?'; params.push(agent_id); }
+  if (funnel_stage) { query += ' AND c.funnel_stage = ?'; params.push(funnel_stage); }
+  if (empreendimento_id) { query += ' AND c.empreendimento_id = ?'; params.push(empreendimento_id); }
+  if (source) { query += ' AND c.source = ?'; params.push(source); }
   query += ' ORDER BY c.last_message_at DESC';
   res.json(db.prepare(query).all(...params));
 });
@@ -168,12 +191,46 @@ app.post('/api/conversations/:id/assign', (req, res) => {
   res.json({ ok: true });
 });
 
+app.post('/api/conversations/:id/funnel', (req, res) => {
+  const { funnel_stage } = req.body;
+  if (!FUNNEL_STAGES.some((s) => s.id === funnel_stage)) return res.status(400).json({ error: 'Etapa inválida' });
+  const resolvedAt = ['ganho', 'perdido'].includes(funnel_stage) ? "datetime('now')" : 'resolved_at';
+  db.prepare(`UPDATE conversations SET funnel_stage = ?, resolved_at = ${resolvedAt} WHERE id = ?`).run(funnel_stage, req.params.id);
+  res.json({ ok: true });
+});
+
+app.post('/api/conversations/:id/empreendimento', (req, res) => {
+  const { empreendimento_id } = req.body;
+  db.prepare('UPDATE conversations SET empreendimento_id = ? WHERE id = ?').run(empreendimento_id || null, req.params.id);
+  res.json({ ok: true });
+});
+
+app.post('/api/conversations/:id/source', (req, res) => {
+  const { source } = req.body;
+  if (!SOURCES.some((s) => s.id === source)) return res.status(400).json({ error: 'Origem inválida' });
+  db.prepare('UPDATE conversations SET source = ? WHERE id = ?').run(source, req.params.id);
+  res.json({ ok: true });
+});
+
 // --- API: agentes ---
 app.get('/api/agents', (req, res) => res.json(db.prepare('SELECT * FROM agents').all()));
 app.post('/api/agents', (req, res) => {
   const { name } = req.body;
   const { lastInsertRowid } = db.prepare('INSERT INTO agents (name) VALUES (?)').run(name);
   res.json(db.prepare('SELECT * FROM agents WHERE id = ?').get(lastInsertRowid));
+});
+
+// --- API: empreendimentos ---
+app.get('/api/empreendimentos', (req, res) => res.json(db.prepare('SELECT * FROM empreendimentos ORDER BY nome').all()));
+app.post('/api/empreendimentos', (req, res) => {
+  const { nome } = req.body;
+  const { lastInsertRowid } = db.prepare('INSERT INTO empreendimentos (nome) VALUES (?)').run(nome);
+  res.json(db.prepare('SELECT * FROM empreendimentos WHERE id = ?').get(lastInsertRowid));
+});
+app.post('/api/empreendimentos/:id/ativo', (req, res) => {
+  const { ativo } = req.body;
+  db.prepare('UPDATE empreendimentos SET ativo = ? WHERE id = ?').run(ativo ? 1 : 0, req.params.id);
+  res.json({ ok: true });
 });
 
 // --- API: respostas rápidas ---
@@ -183,6 +240,9 @@ app.post('/api/quick-replies', (req, res) => {
   db.prepare('INSERT OR REPLACE INTO quick_replies (shortcut, body) VALUES (?, ?)').run(shortcut, body);
   res.json({ ok: true });
 });
+
+// --- API: constantes (funil / origens) ---
+app.get('/api/constants', (req, res) => res.json({ FUNNEL_STAGES, SOURCES }));
 
 // --- API: métricas ---
 app.get('/api/metrics', (req, res) => {
@@ -205,9 +265,7 @@ app.get('/api/metrics', (req, res) => {
     )
     .get().media;
 
-  const porCategoria = db
-    .prepare('SELECT category, COUNT(*) as total FROM conversations GROUP BY category')
-    .all();
+  const porCategoria = db.prepare('SELECT category, COUNT(*) as total FROM conversations GROUP BY category').all();
 
   const volumePorDia = db
     .prepare(
@@ -225,6 +283,22 @@ app.get('/api/metrics', (req, res) => {
     )
     .get(SLA_MINUTOS).n;
 
+  const porFunil = db.prepare('SELECT funnel_stage, COUNT(*) as total FROM conversations GROUP BY funnel_stage').all();
+
+  const porFonte = db.prepare('SELECT source, COUNT(*) as total FROM conversations GROUP BY source').all();
+
+  const porEmpreendimento = db
+    .prepare(
+      `SELECT e.nome as empreendimento, COUNT(*) as total,
+        SUM(CASE WHEN c.funnel_stage = 'ganho' THEN 1 ELSE 0 END) as ganhos
+       FROM conversations c JOIN empreendimentos e ON e.id = c.empreendimento_id
+       GROUP BY e.id ORDER BY total DESC`
+    )
+    .all();
+
+  const totalLeads = porFunil.reduce((acc, f) => acc + f.total, 0);
+  const totalGanhos = porFunil.find((f) => f.funnel_stage === 'ganho')?.total || 0;
+
   res.json({
     total,
     totalAbertas,
@@ -237,6 +311,10 @@ app.get('/api/metrics', (req, res) => {
     volumePorDia,
     atrasadas,
     slaMinutos: SLA_MINUTOS,
+    porFunil,
+    porFonte,
+    porEmpreendimento,
+    taxaConversaoFunil: totalLeads ? Math.round((totalGanhos / totalLeads) * 100) : 0,
   });
 });
 

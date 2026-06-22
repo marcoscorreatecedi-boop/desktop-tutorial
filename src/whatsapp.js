@@ -19,4 +19,23 @@ async function sendTextMessage(toWaId, text) {
   });
 }
 
-module.exports = { sendTextMessage };
+// rows: [{ id, title, description? }] - max 10 itens por section
+async function sendListMessage(toWaId, { header, body, buttonText, rows }) {
+  const api = client();
+  return api.post('/messages', {
+    messaging_product: 'whatsapp',
+    to: toWaId,
+    type: 'interactive',
+    interactive: {
+      type: 'list',
+      header: header ? { type: 'text', text: header } : undefined,
+      body: { text: body },
+      action: {
+        button: buttonText || 'Ver opções',
+        sections: [{ title: 'Opções', rows }],
+      },
+    },
+  });
+}
+
+module.exports = { sendTextMessage, sendListMessage };
