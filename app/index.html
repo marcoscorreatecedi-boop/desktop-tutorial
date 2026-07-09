@@ -134,6 +134,7 @@ tr:hover td{background:#faf7ef;cursor:pointer}
   <div class="abas">
     <button class="aba ativa" id="abaQuadro" onclick="trocarAba('quadro')">Quadro</button>
     <button class="aba" id="abaLista" onclick="trocarAba('lista')">Lista</button>
+    <button class="aba" style="border-color:#1faa53;color:#1faa53" onclick="resumoWhats()" title="Gera o resumo das peças filtradas para colar no WhatsApp">📲 Resumo</button>
   </div>
 </div>
 
@@ -686,6 +687,42 @@ function imprimirFicha(){
       <span>Conferido por: ________________________</span><span>Data: ____/____/______</span><span>CivilNobre Engenharia</span>
     </div>`;
   window.print();
+}
+
+/* ================= RESUMO WHATSAPP ================= */
+function resumoWhats(){
+  const lista = filtrados();
+  if(!lista.length){ alert('Nenhuma peça nos filtros atuais.'); return; }
+  const frases = {'A pedir':'A pedir ⏳','Pedido':'Pedido enviado','Comprado':'Comprado','Fabricado':'Fabricado','Entregue':'Entregue na obra','Instalado':'Instalado','Conferido':'Conferido ✅'};
+  const hoje = new Date().toLocaleDateString('pt-BR');
+  const porObra = {};
+  lista.forEach(p=>{ const o=p.obra||'Sem obra'; (porObra[o]=porObra[o]||[]).push(p); });
+  let txt = '';
+  Object.keys(porObra).sort().forEach(obra=>{
+    const ps = porObra[obra];
+    txt += `*CIVILNOBRE — MARMORARIA · OBRA ${obra.toUpperCase()}*\n_Resumo de ${hoje}_\n\n`;
+    const porUn = {};
+    ps.forEach(p=>{ const u=p.unidade||'Geral'; (porUn[u]=porUn[u]||[]).push(p); });
+    Object.keys(porUn).sort().forEach(un=>{
+      txt += `*${un}*\n`;
+      porUn[un].forEach(p=>{
+        const pedra = p.nomePedra||p.tipoPedra||'';
+        const qtd = (p.qtd||1)>1 ? ` x${p.qtd}` : '';
+        txt += `• ${p.tipoPeca}${p.ambiente?' '+p.ambiente:''}${qtd}${pedra?' ('+pedra+')':''} — ${frases[p.status]||p.status}\n`;
+      });
+      txt += '\n';
+    });
+    const tot = ps.reduce((a,p)=>a+(p.qtd||1),0);
+    const conf = ps.filter(p=>p.status==='Conferido').reduce((a,p)=>a+(p.qtd||1),0);
+    txt += `_Total: ${tot} pedra(s) · ${conf} conferida(s)_\n\n`;
+  });
+  txt = txt.trim();
+  const copiar = t => {
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(t).then(()=>alert('Resumo copiado! É só colar no WhatsApp.')).catch(()=>prompt('Copie o resumo:', t));
+    } else prompt('Copie o resumo:', t);
+  };
+  if(navigator.share){ navigator.share({text:txt}).catch(()=>copiar(txt)); } else copiar(txt);
 }
 
 /* ================= RENDERIZAÇÃO ================= */
