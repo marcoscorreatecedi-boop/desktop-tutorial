@@ -1,5 +1,38 @@
-# Welcome to GitHub Desktop!
+# CivilNobre · Pedidos de Granito e Pedras
 
-This is your README. READMEs are where you can communicate what your project is and how to use it.
+Aplicativo web para gerenciar os pedidos de granito das obras da CivilNobre Engenharia:
+bancadas, peitoris, soleiras, pedras de churrasqueira, portais e mais.
 
-Write your name on line 6, save it, and then head back to GitHub Desktop.
+**Acesse o app:** https://marcoscorreatecedi-boop.github.io/desktop-tutorial/
+
+## O que ele faz
+
+- **Ficha completa de cada peça**: tipo de pedra e cor, comprimento, largura, espessura,
+  rodabanca (altura e lados), testeira/saia, parte úmida e parte seca, posição do bojo/cuba
+  (embutida, sobrepor, esculpida), friso, lados com polimento, pingadeira, transpasse etc.
+  O que não tiver, fica zero.
+- **Desenho técnico automático**: conforme as medidas são preenchidas, o app gera a vista
+  de cima da peça com cotas, cubas, rodabanca, partes úmida/seca e bordas polidas.
+- **Status em quadro (kanban)**: A pedir → Pedido → Comprado → Fabricado → Entregue →
+  Instalado → Conferido, com histórico de quem mudou e quando.
+- **Ficha para impressão**: gera uma folha pronta para entregar ao marmorista.
+- **Acompanhamento simultâneo**: com a sincronização ativada (Firebase, gratuito),
+  engenheiros, marmoraria e escritório veem as mudanças em tempo real.
+- **Sem custo**: hospedado no GitHub Pages (grátis) + banco Firebase no plano gratuito.
+
+## Como ativar a sincronização em tempo real (uma única vez)
+
+1. Entre em https://console.firebase.google.com com uma conta Google e crie um projeto.
+2. Menu **Criação → Firestore Database → Criar banco de dados** (modo de teste,
+   local `southamerica-east1`).
+3. Na tela inicial do projeto, clique no ícone **`</>`** (app da Web) e copie o
+   objeto `firebaseConfig`.
+4. No app, clique em **⚙️ Sincronização**, cole a configuração e ative.
+5. Clique em **🔗 Gerar link para a equipe** e mande no WhatsApp — quem abrir o link
+   já entra sincronizado, sem configurar nada.
+
+## Estrutura
+
+- `app/index.html` — o aplicativo completo (HTML + CSS + JS, sem dependências)
+- `app/logo.svg` — logomarca CivilNobre em vetor
+- `.github/workflows/deploy-pages.yml` — publicação automática no GitHub Pages

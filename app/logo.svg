@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 430 120" role="img" aria-label="CivilNobre Engenharia">
+  <!-- Escudo em camadas (andares), conceito oficial da marca CivilNobre -->
+  <g>
+    <path d="M14 12 h84 v46 q0 32 -42 50 q-42 -18 -42 -50 z" fill="none" stroke="#CF9F4D" stroke-width="6" stroke-linejoin="round"/>
+    <rect x="30" y="28" width="52" height="9" rx="2" fill="#022057"/>
+    <rect x="30" y="43" width="52" height="9" rx="2" fill="#022057"/>
+    <rect x="30" y="58" width="52" height="9" rx="2" fill="#CF9F4D"/>
+    <rect x="39" y="73" width="34" height="9" rx="2" fill="#022057"/>
+  </g>
+  <text x="122" y="62" font-family="Montserrat, Arial, sans-serif" font-size="40" font-weight="800" letter-spacing="2" fill="#022057">CIVILNOBRE</text>
+  <text x="124" y="92" font-family="Montserrat, Arial, sans-serif" font-size="19" font-weight="500" letter-spacing="11" fill="#CF9F4D">ENGENHARIA</text>
+</svg>
