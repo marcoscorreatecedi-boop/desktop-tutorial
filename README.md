@@ -16,8 +16,11 @@ bancadas, peitoris, soleiras, pedras de churrasqueira, portais e mais.
 - **Status em quadro (kanban)**: A pedir → Pedido → Comprado → Fabricado → Entregue →
   Instalado → Conferido, com histórico de quem mudou e quando.
 - **Ficha para impressão**: gera uma folha pronta para entregar ao marmorista.
-- **Acompanhamento simultâneo**: com a sincronização ativada (Firebase, gratuito),
-  engenheiros, marmoraria e escritório veem as mudanças em tempo real.
+- **Acompanhamento simultâneo**: a nuvem rápida da equipe (ntfy.sh, sem conta) já vem
+  ligada — todos veem as mudanças em tempo real. Opcionalmente, dá para plugar um banco
+  Google Firebase (gratuito) para armazenamento mais robusto e privado.
+- **Resumo para WhatsApp**: botão 📲 gera o resumo por obra/apartamento com totais,
+  pronto para colar no grupo.
 - **Sem custo**: hospedado no GitHub Pages (grátis) + banco Firebase no plano gratuito.
 
 ## Como ativar a sincronização em tempo real (uma única vez)
