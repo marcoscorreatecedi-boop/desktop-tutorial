@@ -168,6 +168,11 @@ td.num input{text-align:center;font-variant-numeric:tabular-nums}
       <label style="font-size:12px;font-weight:700;color:var(--navy);text-transform:uppercase">Observações</label>
       <textarea id="anexoObs" rows="2" style="width:100%" placeholder="Recortes, detalhes, prazo..." onchange="salvarObs()"></textarea>
     </div>
+    <div style="display:flex;gap:10px;align-items:end;margin-top:12px;flex-wrap:wrap">
+      <div><label style="font-size:12px;font-weight:700;color:var(--navy);text-transform:uppercase">Etapa</label>
+        <select id="anexoEtapa" class="st" style="min-width:140px" onchange="mudarEtapaModal(this.value)"></select></div>
+      <button class="btn verm mini" style="margin-left:auto" onclick="excluirDoModal()">🗑️ Excluir peça</button>
+    </div>
   </div>
 </div>
 
@@ -470,11 +475,25 @@ function excluir(id, ev){
 function abrirAnexo(id){
   anexoId = id;
   const p = pedidos[id]; if(!p) return;
-  $('anexoTitulo').textContent = `${p.tipoPeca||'Peça'} ${p.ambiente||''} — ${p.obra||''}`;
+  $('anexoTitulo').textContent = `${p.tipoPeca||'Peça'} ${p.ambiente||''}${p.unidade?' · '+p.unidade:''} — ${p.obra||''}`;
   $('avisoBancada').style.display = ehBancada(p) ? '' : 'none';
   $('anexoObs').value = p.obs || '';
+  const sel = $('anexoEtapa');
+  sel.innerHTML = STATUS.map(s=>`<option${s===p.status?' selected':''}>${s}</option>`).join('');
+  sel.style.background = CORES_STATUS[p.status] || '#888';
   mostrarAnexo();
   $('veuAnexo').classList.add('aberto');
+}
+function mudarEtapaModal(v){
+  if(!anexoId) return;
+  atualizarCampo(anexoId, 'status', v);
+  $('anexoEtapa').style.background = CORES_STATUS[v] || '#888';
+}
+function excluirDoModal(){
+  if(!anexoId) return;
+  const id = anexoId;
+  fecharAnexo();
+  excluir(id);
 }
 function fecharAnexo(){ $('veuAnexo').classList.remove('aberto'); anexoId = null; }
 function mostrarAnexo(){
@@ -572,12 +591,15 @@ const MAPA_PADRAO = [
   ['Portal','Área de serviço']
 ];
 const norm = s => String(s||'').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+/* Cores do mapa: 🔴 não pedido · 🟢 pedido · ⚪ fabricado · 🔵 instalado */
+const MAPA_COR = {'A pedir':'#c0392b','Pedido':'#1e8e4e','Comprado':'#1e8e4e','Fabricado':'#7c8492','Entregue':'#7c8492','Instalado':'#2f6fb6','Conferido':'#2f6fb6'};
 function criarDoMapa(obra, unidade, tipo, ambiente){
   pedirNome();
   const p = {id:novoId(), obra, unidade, ambiente, tipoPeca:tipo, cor:'', comprimento:0, largura:0, qtd:1,
     temDesenho:false, obs:'', status:'A pedir', criadoEm:agora(), criadoPor:usuario, atualizadoEm:agora(), atualizadoPor:usuario,
     historico:[{status:'A pedir', data:agora(), por:usuario}]};
   pedidos[p.id]=p; salvarLocal(); pushRemoto(p); render();
+  return p.id;
 }
 function gerarApto(obra){
   pedirNome();
@@ -600,7 +622,7 @@ function renderMapa(porObra, obras){
   const unidades = [...new Set(ps.map(p=>p.unidade).filter(Boolean))].sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
   let html = `<div class="obra-chips">${chips}</div>
     <div class="mapa-topo"><button class="btn ouro mini" onclick="gerarApto('${esc(obraKan)}')">＋ Gerar apto (lista padrão)</button>
-    <span class="res">Verde a cinza = etapa · <b style="color:#c0392b">falta ＋</b> = ainda não lançado (clique para criar) · vá excluindo na Planilha o que o apto não tiver</span></div>`;
+    <span class="res">🔴 não pedido · 🟢 pedido · ⚪ fabricado · 🔵 instalado — clique na célula para abrir, anexar desenho, escrever ou excluir</span></div>`;
   if(!unidades.length){
     html += '<div class="vazio">Nenhum apartamento nesta obra ainda. Clique em <b>＋ Gerar apto</b> para lançar a lista padrão de uma vez.</div>';
     mp.innerHTML = html; return;
@@ -611,8 +633,8 @@ function renderMapa(porObra, obras){
     if(tipo!==grupoAtual){ grupoAtual = tipo; const plural = {Bancada:'Bancadas',Peitoril:'Peitoris',Soleira:'Soleiras',Portal:'Portais'}[tipo]||tipo; corpo += `<tr class="grupo"><td colspan="${unidades.length+1}">${plural}</td></tr>`; }
     corpo += `<tr><td class="item">${tipo} ${amb}</td>` + unidades.map(u=>{
       const p = acha(u,tipo,amb);
-      if(p) return `<td><button class="mchip" style="background:${CORES_STATUS[p.status]||'#888'}" title="${esc(p.status)} — clique para abrir" onclick="abrirAnexo('${p.id}')">${esc(p.status)}</button></td>`;
-      return `<td><button class="mfalta" title="Criar ${tipo} ${amb} no ${esc(u)}" onclick="criarDoMapa('${esc(obraKan)}','${esc(u)}','${tipo}','${esc(amb)}')">falta ＋</button></td>`;
+      if(p) return `<td><button class="mchip" style="background:${MAPA_COR[p.status]||'#888'}" title="${esc(p.status)} — clique para abrir, anexar e escrever" onclick="abrirAnexo('${p.id}')">${esc(p.status)}${fotos[p.id]||p.temDesenho?' 📎':''}</button></td>`;
+      return `<td><button class="mfalta" title="Criar ${tipo} ${amb} no ${esc(u)} (dá para excluir depois)" onclick="abrirAnexo(criarDoMapa('${esc(obraKan)}','${esc(u)}','${tipo}','${esc(amb)}'))">falta ＋</button></td>`;
     }).join('') + '</tr>';
   });
   // itens fora do padrão
@@ -624,7 +646,7 @@ function renderMapa(porObra, obras){
       const [tipo,amb] = ch.split('|');
       corpo += `<tr><td class="item">${esc(tipo)} ${esc(amb)}</td>` + unidades.map(u=>{
         const p = extras.find(x=>norm(x.unidade)===norm(u) && x.tipoPeca===tipo && x.ambiente===amb);
-        return p ? `<td><button class="mchip" style="background:${CORES_STATUS[p.status]||'#888'}" onclick="abrirAnexo('${p.id}')">${esc(p.status)}</button></td>` : '<td><span class="mna">·</span></td>';
+        return p ? `<td><button class="mchip" style="background:${MAPA_COR[p.status]||'#888'}" onclick="abrirAnexo('${p.id}')">${esc(p.status)}${fotos[p.id]||p.temDesenho?' 📎':''}</button></td>` : '<td><span class="mna">·</span></td>';
       }).join('') + '</tr>';
     });
   }
