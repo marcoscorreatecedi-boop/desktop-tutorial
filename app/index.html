@@ -306,12 +306,18 @@ function pushFoto(id){
     for(let i=0;i<total;i++) setTimeout(()=> ntPub({t:'fotoc', id, i, d:d.slice(i*CH,(i+1)*CH)}), 300+i*250);
   }
 }
+/* fetch com limite de tempo: rede que "engole" a conexão não trava mais o app */
+function fetchTempo(url, opts, ms){
+  const ctl = new AbortController();
+  const t = setTimeout(()=>ctl.abort(), ms||10000);
+  return fetch(url, Object.assign({}, opts, {signal: ctl.signal})).finally(()=>clearTimeout(t));
+}
 /* Fila de envio: nada se perde se a nuvem estiver fora no momento do salvamento */
 let filaNt = JSON.parse(localStorage.getItem('cn_fila') || '[]');
 function salvarFila(){ localStorage.setItem('cn_fila', JSON.stringify(filaNt.slice(-500))); }
 function ntPub(obj){
   try{
-    fetch(NTFY, {method:'POST', body: JSON.stringify(obj)})
+    fetchTempo(NTFY, {method:'POST', body: JSON.stringify(obj)}, 15000)
       .then(r=>{ if(!r.ok) throw new Error('http '+r.status); })
       .catch(()=>{ filaNt.push(obj); salvarFila(); });
   }catch(e){ filaNt.push(obj); salvarFila(); }
@@ -351,27 +357,30 @@ function ntAplicar(msg){
     }, 400+Math.random()*1500);
   }
 }
-let ntOk = false, ntHelloFeito = false, ntSincronizando = false;
+let ntOk = false, ntHelloFeito = false, ntSincDesdeTs = 0, ntFalhas = 0;
 let ntDesde = Math.floor(Date.now()/1000) - 12*3600; // começa pegando as últimas 12h
 const horaAgora = () => new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
 async function ntfyTentar(){
-  if(ntSincronizando) return;
-  ntSincronizando = true;
+  // trava com validade: nunca fica presa mais de 30s, mesmo se algo pendurar
+  if(ntSincDesdeTs && Date.now() - ntSincDesdeTs < 30000) return;
+  ntSincDesdeTs = Date.now();
   try{
     const marca = Math.floor(Date.now()/1000);
-    const r = await fetch(NTFY+'/json?poll=1&since='+ntDesde, {cache:'no-store'});
+    const r = await fetchTempo(NTFY+'/json?poll=1&since='+ntDesde, {cache:'no-store'}, 10000);
     if(!r.ok) throw new Error('http '+r.status);
     (await r.text()).split('\n').filter(Boolean).forEach(l=>{ try{ const ev=JSON.parse(l); if(ev.event==='message') ntAplicar(ev.message); }catch(e){} });
     ntDesde = marca - 300; // 5 min de sobreposição: cobre relógio adiantado do aparelho (reaplicar é inofensivo)
-    ntOk = true;
+    ntOk = true; ntFalhas = 0;
     setSync('on','Sincronizado ✓ '+horaAgora());
     drenarFila();
     if(!ntHelloFeito){ ntHelloFeito = true; ntPub({t:'hello', de:clienteId}); }
   }catch(e){
-    ntOk = false;
-    setSync('erro','Reconectando... (dados salvos aqui)');
+    ntOk = false; ntFalhas++;
+    setSync('erro', ntFalhas >= 3
+      ? 'Nuvem bloqueada nesta rede? Dados salvos aqui — ative o Firebase em ⚙️'
+      : 'Reconectando... (dados salvos aqui)');
   }
-  ntSincronizando = false;
+  ntSincDesdeTs = 0;
 }
 function iniciarNtfy(){
   setSync('off','Conectando...');
