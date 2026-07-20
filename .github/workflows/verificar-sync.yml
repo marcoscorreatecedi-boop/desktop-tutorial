@@ -1,0 +1,38 @@
+name: Verificar site e nuvem de sincronização
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 9 * * 1-6'  # dias úteis, 6h da manhã em Brasília: avisa se algo cair
+
+permissions:
+  contents: read
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Site publicado esta no ar e na versao atual
+        run: |
+          curl -fsS https://marcoscorreatecedi-boop.github.io/desktop-tutorial/ -o site.html
+          grep -q "Pedidos de Granito" site.html
+          grep -q "drenarFila" site.html
+          grep -q "pecaParaEnvio" site.html
+          echo "SITE OK — no ar e com a versão mais recente"
+
+      - name: Nuvem de sincronizacao publica e entrega mensagens
+        run: |
+          TOPIC="civilnobre-granito-mq7x2v9k4t"
+          MARCA="verificacao-$(date +%s)-$RANDOM"
+          # publica como o app publica
+          curl -fsS -d "{\"t\":\"verificacao\",\"m\":\"$MARCA\"}" "https://ntfy.sh/$TOPIC" > /dev/null
+          sleep 3
+          # lê como o app lê (poll incremental)
+          curl -fsS "https://ntfy.sh/$TOPIC/json?poll=1&since=2m" | grep -q "$MARCA"
+          echo "NUVEM OK — mensagem publicada e recebida de volta"
+
+      - name: Canal ao vivo (SSE) responde
+        run: |
+          timeout 10 curl -fsSN "https://ntfy.sh/civilnobre-granito-mq7x2v9k4t/sse?since=1m" | head -c 200 > sse.out || true
+          test -s sse.out
+          echo "CANAL AO VIVO OK"
