@@ -62,6 +62,10 @@ td.num input{text-align:center;font-variant-numeric:tabular-nums}
 .acoes button{border:none;background:none;font-size:16px;padding:3px 5px;border-radius:6px}
 .acoes button:hover{background:#f0ead9}
 .dica-bancada{font-size:12px;color:#a06a00}
+.apto-cab td{background:#efe9d8;cursor:pointer;font-size:13.5px;padding:7px 10px;border-bottom:1.5px solid var(--line)}
+.apto-cab:hover td{background:#eae2cc}
+.apto-cab .seta{color:var(--gold);font-size:12px;margin-right:2px}
+.uchip{display:inline-block;min-width:24px;text-align:center;color:#fff;border-radius:10px;font-size:11px;font-weight:700;padding:1px 6px;margin-left:3px}
 .vazio{padding:40px;text-align:center;color:var(--mut)}
 .nova-obra{margin:6px 0 30px}
 
@@ -104,6 +108,7 @@ td.num input{text-align:center;font-variant-numeric:tabular-nums}
 #linkCompart{word-break:break-all;font-size:12px;background:#f0ecdf;border-radius:8px;padding:9px;display:none;margin-top:9px}
 #anexoImg{max-width:100%;border:1px solid var(--line);border-radius:8px;margin-top:10px;display:none}
 .aviso-bancada{background:#fff6e3;border:1px solid #ecd9a8;border-radius:8px;padding:9px 11px;color:#7a5c17;font-size:13.5px;margin-bottom:10px}
+.zlab{font-size:12px;font-weight:700;color:var(--navy);text-transform:uppercase;display:block;margin:6px 0 4px}
 
 /* ===== Impressão ===== */
 #areaImpressao{display:none}
@@ -138,7 +143,7 @@ td.num input{text-align:center;font-variant-numeric:tabular-nums}
     <button class="aba ativa" id="abaPlan" onclick="trocarAba('plan')">📋 Planilha</button>
     <button class="aba" id="abaKan" onclick="trocarAba('kan')">📌 Etapas</button>
     <button class="aba" id="abaMapa" onclick="trocarAba('mapa')">🗺️ Mapa</button>
-    <button class="aba zap" onclick="resumoWhats()">📲 Resumo</button>
+    <button class="aba zap" onclick="abrirZap()">📲 WhatsApp</button>
   </div>
 </div>
 
@@ -171,6 +176,7 @@ td.num input{text-align:center;font-variant-numeric:tabular-nums}
     <div style="display:flex;gap:10px;align-items:end;margin-top:12px;flex-wrap:wrap">
       <div><label style="font-size:12px;font-weight:700;color:var(--navy);text-transform:uppercase">Etapa</label>
         <select id="anexoEtapa" class="st" style="min-width:140px" onchange="mudarEtapaModal(this.value)"></select></div>
+      <button class="btn borda mini" id="btnNaoTem" onclick="alternarNaoTem()">🚫 Este apto não tem</button>
       <button class="btn verm mini" style="margin-left:auto" onclick="excluirDoModal()">🗑️ Excluir peça</button>
     </div>
   </div>
@@ -200,6 +206,30 @@ td.num input{text-align:center;font-variant-numeric:tabular-nums}
     <div style="display:flex;gap:8px;flex-wrap:wrap">
       <button class="btn borda mini" onclick="exportar()">⬇️ Exportar backup</button>
       <label class="btn borda mini" style="display:inline-block">⬆️ Importar backup<input type="file" accept=".json" style="display:none" onchange="importar(this)"></label>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: WHATSAPP ===== -->
+<div class="veu" id="veuZap">
+  <div class="janela">
+    <div class="jtopo"><h2>📲 Enviar pelo WhatsApp</h2><button class="btn borda mini" onclick="fecharZap()">Fechar</button></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+      <div style="flex:1;min-width:150px"><label class="zlab">Obra</label><select id="zObra" style="width:100%" onchange="zapMudouObra()"></select></div>
+      <div style="flex:1;min-width:150px"><label class="zlab">Apartamento</label><select id="zApto" style="width:100%" onchange="zapPreview()"></select></div>
+    </div>
+    <label class="zlab">O que você quer mandar?</label>
+    <div class="obra-chips" id="zTipos" style="margin-bottom:6px"></div>
+    <label class="zlab">Etapas incluídas</label>
+    <div class="obra-chips" id="zEtapas" style="margin-bottom:6px"></div>
+    <label style="display:flex;gap:6px;align-items:center;margin:2px 0 10px;font-size:13.5px"><input type="checkbox" id="zFotos" checked onchange="zapPreview()"> Enviar os desenhos anexados junto</label>
+    <label class="zlab">Prévia (pode editar antes de enviar)</label>
+    <textarea id="zPrev" rows="9" style="width:100%;font-size:12.5px"></textarea>
+    <div id="zNota" class="dica-bancada" style="margin-top:4px"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:10px">
+      <button class="btn borda mini" onclick="zapBaixar()">⬇️ Baixar desenhos</button>
+      <button class="btn borda mini" onclick="zapCopiar()">📋 Copiar texto</button>
+      <button class="btn ouro" onclick="zapEnviar()">📤 Enviar no WhatsApp</button>
     </div>
   </div>
 </div>
@@ -295,22 +325,33 @@ function ntAplicar(msg){
     }, 400+Math.random()*1500);
   }
 }
-async function iniciarNtfy(){
-  setSync('off','Conectando...');
-  let conectou = false;
+let ntOk = false, ntHelloFeito = false;
+async function ntfyTentar(){
   try{
     const r = await fetch(NTFY+'/json?poll=1&since=12h');
+    if(!r.ok) throw new Error('http '+r.status);
     (await r.text()).split('\n').filter(Boolean).forEach(l=>{ try{ const ev=JSON.parse(l); if(ev.event==='message') ntAplicar(ev.message); }catch(e){} });
-    conectou = true;
-  }catch(e){ console.error(e); }
+    ntOk = true;
+    setSync('on','Sincronizado ✓');
+    if(!ntHelloFeito){ ntHelloFeito = true; ntPub({t:'hello', de:clienteId}); }
+  }catch(e){
+    ntOk = false;
+    setSync('erro','Reconectando... (dados salvos aqui)');
+  }
+}
+function iniciarNtfy(){
+  setSync('off','Conectando...');
+  ntfyTentar();
   try{
     const es = new EventSource(NTFY+'/sse');
     es.onmessage = e => { try{ const ev=JSON.parse(e.data); if(ev.message) ntAplicar(ev.message); }catch(err){} };
-    es.onopen = () => setSync('on','Sincronizado ✓');
-    es.onerror = () => { if(!conectou) setSync('erro','Sem conexão — modo local'); };
+    es.onopen = () => { if(!ntOk) ntfyTentar(); else setSync('on','Sincronizado ✓'); };
+    es.onerror = () => { if(!ntOk) setSync('erro','Reconectando... (dados salvos aqui)'); };
   }catch(e){ console.error(e); }
-  if(conectou){ setSync('on','Sincronizado ✓'); ntPub({t:'hello', de:clienteId}); }
-  else setSync('erro','Sem conexão — modo local');
+  // tenta de novo sozinho: a cada 20s se cair, ao voltar a internet e ao voltar para o app
+  setInterval(()=>{ if(!ntOk) ntfyTentar(); }, 20000);
+  window.addEventListener('online', ntfyTentar);
+  document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible') ntfyTentar(); });
 }
 async function iniciarSync(){
   const raw = localStorage.getItem(K_CFG);
@@ -408,9 +449,10 @@ function novaObra(){
   if(!nome) return;
   novaPeca(nome.trim());
 }
-function novaPeca(obra){
+function novaPeca(obra, un){
   pedirNome();
-  const p = {id:novoId(), obra, unidade:'', ambiente:'', tipoPeca:'Peitoril', cor:'', comprimento:0, largura:0, qtd:1,
+  expandidos.add(obra+'|'+(un||'Geral'));
+  const p = {id:novoId(), obra, unidade:un||'', ambiente:'', tipoPeca:'Peitoril', cor:'', comprimento:0, largura:0, qtd:1,
     temDesenho:false, obs:'', status:'A pedir', criadoEm:agora(), criadoPor:usuario, atualizadoEm:agora(), atualizadoPor:usuario,
     historico:[{status:'A pedir', data:agora(), por:usuario}]};
   pedidos[p.id]=p; salvarLocal(); pushRemoto(p); render();
@@ -427,7 +469,7 @@ function atualizarCampo(id, campo, valor){
   p.atualizadoEm = agora(); p.atualizadoPor = usuario;
   if(campo==='status'){ p.historico = p.historico||[]; p.historico.push({status:valor, data:agora(), por:usuario}); }
   salvarLocal(); pushRemoto(p);
-  if(campo==='status' || campo==='tipoPeca' || campo==='obra'){
+  if(campo==='status' || campo==='tipoPeca' || campo==='obra' || campo==='naoTem'){
     if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
     render();
   }
@@ -481,6 +523,7 @@ function abrirAnexo(id){
   const sel = $('anexoEtapa');
   sel.innerHTML = STATUS.map(s=>`<option${s===p.status?' selected':''}>${s}</option>`).join('');
   sel.style.background = CORES_STATUS[p.status] || '#888';
+  $('btnNaoTem').textContent = p.naoTem ? '✔ Este apto TEM este item' : '🚫 Este apto não tem';
   mostrarAnexo();
   $('veuAnexo').classList.add('aberto');
 }
@@ -488,6 +531,12 @@ function mudarEtapaModal(v){
   if(!anexoId) return;
   atualizarCampo(anexoId, 'status', v);
   $('anexoEtapa').style.background = CORES_STATUS[v] || '#888';
+}
+function alternarNaoTem(){
+  if(!anexoId) return;
+  const p = pedidos[anexoId]; if(!p) return;
+  atualizarCampo(anexoId, 'naoTem', !p.naoTem);
+  fecharAnexo(); render();
 }
 function excluirDoModal(){
   if(!anexoId) return;
@@ -546,39 +595,129 @@ function imprimirFicha(){
   window.print();
 }
 
-/* ================= RESUMO WHATSAPP ================= */
-function resumoWhats(){
-  const lista = filtrados();
-  if(!lista.length){ alert('Nenhuma peça.'); return; }
-  const frases = {'A pedir':'A pedir ⏳','Pedido':'Pedido enviado','Comprado':'Comprado','Fabricado':'Fabricado','Entregue':'Entregue na obra','Instalado':'Instalado','Conferido':'Conferido ✅'};
-  const hoje = new Date().toLocaleDateString('pt-BR');
-  const porObra = {};
-  lista.forEach(p=>{ const o=p.obra||'Sem obra'; (porObra[o]=porObra[o]||[]).push(p); });
+/* ================= ENVIO WHATSAPP ================= */
+let zTipo = 'resumo';
+const zEtapas = new Set(STATUS);
+const Z_INFO = {
+  resumo:     {rot:'📋 Resumo do dia',        preset: STATUS},
+  cotacao:    {rot:'💰 Pedido de cotação',    preset: ['A pedir']},
+  fabricacao: {rot:'🏭 Ordem de fabricação',  preset: ['Comprado']},
+  diretoria:  {rot:'👔 Relatório p/ diretoria', preset: STATUS}
+};
+function abrirZap(){
+  const obras = [...new Set(Object.values(pedidos).filter(p=>!p.naoTem).map(p=>p.obra).filter(Boolean))].sort();
+  if(!obras.length){ alert('Nenhuma peça cadastrada ainda.'); return; }
+  const so = $('zObra'), val = so.value;
+  so.innerHTML = obras.map(o=>`<option>${esc(o)}</option>`).join('');
+  if(obras.includes(val)) so.value = val; else if(obras.includes(obraKan)) so.value = obraKan;
+  zapMudouObra();
+  zapTipo(zTipo);
+  $('veuZap').classList.add('aberto');
+}
+function fecharZap(){ $('veuZap').classList.remove('aberto'); }
+function zapMudouObra(){
+  const ps = Object.values(pedidos).filter(p=>p.obra===$('zObra').value && !p.naoTem);
+  const uns = [...new Set(ps.map(p=>p.unidade).filter(Boolean))].sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
+  $('zApto').innerHTML = '<option value="">Todos os aptos</option>' + uns.map(u=>`<option>${esc(u)}</option>`).join('');
+  zapPreview();
+}
+function zapTipo(t){
+  zTipo = t;
+  zEtapas.clear(); Z_INFO[t].preset.forEach(s=>zEtapas.add(s));
+  desenharChipsZap(); zapPreview();
+}
+function zapEtapa(s){
+  if(zEtapas.has(s)) zEtapas.delete(s); else zEtapas.add(s);
+  desenharChipsZap(); zapPreview();
+}
+function desenharChipsZap(){
+  $('zTipos').innerHTML = Object.entries(Z_INFO).map(([k,v])=>`<button class="ochip${k===zTipo?' ativa':''}" onclick="zapTipo('${k}')">${v.rot}</button>`).join('');
+  $('zEtapas').innerHTML = STATUS.map(s=>`<button class="ochip${zEtapas.has(s)?' ativa':''}" style="${zEtapas.has(s)?`background:${CORES_STATUS[s]};border-color:${CORES_STATUS[s]};color:#fff`:''}" onclick="zapEtapa('${s}')">${s}</button>`).join('');
+}
+function zapPecas(){
+  return Object.values(pedidos).filter(p=>p.obra===$('zObra').value && !p.naoTem
+    && (!$('zApto').value || p.unidade===$('zApto').value)
+    && zEtapas.has(p.status))
+    .sort((a,b)=>(a.unidade||'').localeCompare(b.unidade||'',undefined,{numeric:true}));
+}
+function linhaZap(p){
+  const qtd = (p.qtd||1)>1?` x${p.qtd}`:'';
+  const cor = corDe(p);
+  const med = ehBancada(p) ? 'medidas no desenho anexo 📎' : ((p.comprimento&&p.largura)?`${p.comprimento}×${p.largura} cm`:'');
+  return `• ${p.tipoPeca||'Peça'}${p.ambiente?' '+p.ambiente:''}${qtd}${cor?' — '+cor:''}${med?' — '+med:''}`;
+}
+function zapPreview(){
+  const obra = $('zObra').value, hoje = new Date().toLocaleDateString('pt-BR');
+  const ps = zapPecas();
+  const nFotos = ps.filter(p=>fotos[p.id]).length;
+  const porUn = {};
+  ps.forEach(p=>{ const u=p.unidade||'Geral'; (porUn[u]=porUn[u]||[]).push(p); });
+  const unsOrd = Object.keys(porUn).sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
+  const blocoPecas = () => unsOrd.map(u=>`*${u}*\n`+porUn[u].map(linhaZap).join('\n')).join('\n\n');
   let txt = '';
-  Object.keys(porObra).sort().forEach(obra=>{
-    const ps = porObra[obra];
-    txt += `*CIVILNOBRE — MARMORARIA · OBRA ${obra.toUpperCase()}*\n_Resumo de ${hoje}_\n\n`;
-    const porUn = {};
-    ps.forEach(p=>{ const u=p.unidade||'Geral'; (porUn[u]=porUn[u]||[]).push(p); });
-    Object.keys(porUn).sort().forEach(un=>{
-      txt += `*${un}*\n`;
-      porUn[un].forEach(p=>{
-        const qtd = (p.qtd||1)>1 ? ` x${p.qtd}` : '';
-        const cor = corDe(p);
-        txt += `• ${p.tipoPeca||'Peça'}${p.ambiente?' '+p.ambiente:''}${qtd}${cor?' ('+cor+')':''} — ${frases[p.status]||p.status}\n`;
-      });
-      txt += '\n';
-    });
+  if(zTipo==='cotacao'){
+    txt = `*CIVILNOBRE ENGENHARIA — SOLICITAÇÃO DE COTAÇÃO*\n_Obra ${obra} · ${hoje}_\n\nFavor cotar as peças de granito/pedra abaixo:\n\n${blocoPecas()}\n\n${nFotos?nFotos+' desenho(s) de bancada seguem em anexo.\n':''}Favor retornar com *preço e prazo de entrega*. Obrigado!`;
+  } else if(zTipo==='fabricacao'){
+    txt = `*CIVILNOBRE — ORDEM DE FABRICAÇÃO*\n_Obra ${obra} · ${hoje}_\n\nLiberar para fabricação:\n\n${blocoPecas()}\n\n${nFotos?nFotos+' desenho(s) seguem em anexo. ':''}⚠️ Conferir medidas no local antes do corte.`;
+  } else if(zTipo==='diretoria'){
+    const todos = Object.values(pedidos).filter(p=>p.obra===obra && !p.naoTem && (!$('zApto').value || p.unidade===$('zApto').value));
+    const ct = s => todos.filter(p=>s.includes(p.status)).reduce((a,p)=>a+(p.qtd||1),0);
+    const tot = todos.reduce((a,p)=>a+(p.qtd||1),0);
+    const conf = ct(['Conferido']);
+    txt = `*RELATÓRIO GRANITOS — OBRA ${obra.toUpperCase()}*\n_${hoje} · por ${usuario||''}_\n\nTotal: *${tot} pedra(s)*\n🔴 A pedir: ${ct(['A pedir'])}\n🟢 Pedido/Comprado: ${ct(['Pedido','Comprado'])}\n⚪ Fabricado/Entregue: ${ct(['Fabricado','Entregue'])}\n🔵 Instalado: ${ct(['Instalado'])}\n✅ Conferido: ${conf} (${tot?Math.round(conf*100/tot):0}%)`;
+    const unsObra = [...new Set(todos.map(p=>p.unidade).filter(Boolean))];
+    const pend = unsObra.map(u=>{
+      const falta = MAPA_PADRAO.filter(([t,a])=>!Object.values(pedidos).some(p=>p.obra===obra && norm(p.unidade)===norm(u) && p.tipoPeca===t && norm(p.ambiente)===norm(a))).length;
+      return falta ? `• ${u}: faltam ${falta} item(ns) do padrão no mapa` : null;
+    }).filter(Boolean);
+    if(pend.length) txt += `\n\n*Pendências do mapa:*\n${pend.join('\n')}`;
+  } else {
+    const frases = {'A pedir':'A pedir ⏳','Pedido':'Pedido enviado','Comprado':'Comprado','Fabricado':'Fabricado','Entregue':'Entregue na obra','Instalado':'Instalado','Conferido':'Conferido ✅'};
     const tot = ps.reduce((a,p)=>a+(p.qtd||1),0);
     const conf = ps.filter(p=>p.status==='Conferido').reduce((a,p)=>a+(p.qtd||1),0);
-    txt += `_Total: ${tot} pedra(s) · ${conf} conferida(s)_\n\n`;
-  });
-  txt = txt.trim();
-  const copiar = t => {
-    if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(()=>alert('Resumo copiado! É só colar no WhatsApp.')).catch(()=>prompt('Copie:',t));
-    else prompt('Copie:',t);
-  };
-  if(navigator.share){ navigator.share({text:txt}).catch(()=>copiar(txt)); } else copiar(txt);
+    txt = `*CIVILNOBRE — MARMORARIA · OBRA ${obra.toUpperCase()}*\n_Resumo de ${hoje}_\n\n` +
+      unsOrd.map(u=>`*${u}*\n`+porUn[u].map(p=>{
+        const qtd=(p.qtd||1)>1?` x${p.qtd}`:''; const cor=corDe(p);
+        return `• ${p.tipoPeca||'Peça'}${p.ambiente?' '+p.ambiente:''}${qtd}${cor?' ('+cor+')':''} — ${frases[p.status]||p.status}`;
+      }).join('\n')).join('\n\n') + `\n\n_Total: ${tot} pedra(s) · ${conf} conferida(s)_`;
+  }
+  $('zPrev').value = ps.length ? txt : '(nenhuma peça nas etapas selecionadas — ajuste as etapas acima)';
+  $('zNota').textContent = ($('zFotos').checked && nFotos) ? `📎 ${nFotos} desenho(s) irão junto (no celular). No computador, use "Baixar desenhos" e arraste no WhatsApp.` : '';
+}
+async function zapArquivos(){
+  const ps = zapPecas().filter(p=>fotos[p.id]).slice(0,10);
+  const files = [];
+  for(const p of ps){
+    try{
+      const blob = await (await fetch(fotos[p.id])).blob();
+      const nome = `desenho-${(p.unidade||'geral')}-${p.tipoPeca||'peca'}-${p.ambiente||p.id}`.replace(/\s+/g,'-').toLowerCase()+'.jpg';
+      files.push(new File([blob], nome, {type:'image/jpeg'}));
+    }catch(e){ console.error(e); }
+  }
+  return files;
+}
+async function zapEnviar(){
+  const txt = $('zPrev').value;
+  let files = [];
+  if($('zFotos').checked) files = await zapArquivos();
+  if(navigator.canShare && files.length && navigator.canShare({files})){
+    try{ await navigator.share({text:txt, files}); return; }catch(e){ if(e && e.name==='AbortError') return; }
+  }
+  if(navigator.share){
+    try{ await navigator.share({text:txt}); return; }catch(e){ if(e && e.name==='AbortError') return; }
+  }
+  if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).catch(()=>{});
+  window.open('https://wa.me/?text='+encodeURIComponent(txt), '_blank');
+}
+async function zapBaixar(){
+  const files = await zapArquivos();
+  if(!files.length){ alert('Nenhum desenho anexado nas peças selecionadas.'); return; }
+  files.forEach(f=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(f); a.download=f.name; a.click(); });
+}
+function zapCopiar(){
+  const t = $('zPrev').value;
+  if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(()=>alert('Texto copiado!')).catch(()=>prompt('Copie:',t));
+  else prompt('Copie:',t);
 }
 
 /* ================= MAPA GERAL ================= */
@@ -622,7 +761,7 @@ function renderMapa(porObra, obras){
   const unidades = [...new Set(ps.map(p=>p.unidade).filter(Boolean))].sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
   let html = `<div class="obra-chips">${chips}</div>
     <div class="mapa-topo"><button class="btn ouro mini" onclick="gerarApto('${esc(obraKan)}')">＋ Gerar apto (lista padrão)</button>
-    <span class="res">🔴 não pedido · 🟢 pedido · ⚪ fabricado · 🔵 instalado — clique na célula para abrir, anexar desenho, escrever ou excluir</span></div>`;
+    <span class="res">🔴 não pedido · 🟢 pedido · ⚪ fabricado · 🔵 instalado · ✖ não tem — clique na célula para abrir, anexar, escrever, marcar "não tem" ou excluir</span></div>`;
   if(!unidades.length){
     html += '<div class="vazio">Nenhum apartamento nesta obra ainda. Clique em <b>＋ Gerar apto</b> para lançar a lista padrão de uma vez.</div>';
     mp.innerHTML = html; return;
@@ -633,6 +772,7 @@ function renderMapa(porObra, obras){
     if(tipo!==grupoAtual){ grupoAtual = tipo; const plural = {Bancada:'Bancadas',Peitoril:'Peitoris',Soleira:'Soleiras',Portal:'Portais'}[tipo]||tipo; corpo += `<tr class="grupo"><td colspan="${unidades.length+1}">${plural}</td></tr>`; }
     corpo += `<tr><td class="item">${tipo} ${amb}</td>` + unidades.map(u=>{
       const p = acha(u,tipo,amb);
+      if(p && p.naoTem) return `<td><button class="mchip" style="background:#565b66;text-decoration:line-through" title="Este apto não tem — clique para reverter" onclick="abrirAnexo('${p.id}')">✖ não tem</button></td>`;
       if(p) return `<td><button class="mchip" style="background:${MAPA_COR[p.status]||'#888'}" title="${esc(p.status)} — clique para abrir, anexar e escrever" onclick="abrirAnexo('${p.id}')">${esc(p.status)}${fotos[p.id]||p.temDesenho?' 📎':''}</button></td>`;
       return `<td><button class="mfalta" title="Criar ${tipo} ${amb} no ${esc(u)} (dá para excluir depois)" onclick="abrirAnexo(criarDoMapa('${esc(obraKan)}','${esc(u)}','${tipo}','${esc(amb)}'))">falta ＋</button></td>`;
     }).join('') + '</tr>';
@@ -667,6 +807,11 @@ function filtrados(){
     return [p.obra,p.unidade,p.ambiente,p.tipoPeca,corDe(p),p.obs].join(' ').toLowerCase().includes(b);
   });
 }
+const expandidos = new Set();
+function alternarApto(key){
+  if(expandidos.has(key)) expandidos.delete(key); else expandidos.add(key);
+  render();
+}
 let renderAdiado = false;
 function render(){
   const foco = document.activeElement;
@@ -683,8 +828,8 @@ function render(){
     pl.innerHTML = '<div class="vazio">Nenhuma obra ainda. Clique em <b>＋ Nova obra</b> para começar.</div>';
   } else {
     pl.innerHTML = obras.map(obra=>{
-      const ps = porObra[obra].sort((a,b)=>(a.criadoEm||'').localeCompare(b.criadoEm||''));
-      const linhas = ps.map(p=>{
+      const psObra = porObra[obra].filter(p=>!p.naoTem);
+      const linhaPeca = p=>{
         const banc = ehBancada(p);
         const clip = fotos[p.id]||p.temDesenho ? 'tem' : (banc ? 'falta' : '');
         const i = STATUS.indexOf(p.status);
@@ -707,9 +852,24 @@ function render(){
             <button title="Excluir" onclick="excluir('${p.id}',event)">🗑️</button>
           </td>
         </tr>`;
+      };
+      const porUn = {};
+      psObra.forEach(p=>{ const u=p.unidade||'Geral'; (porUn[u]=porUn[u]||[]).push(p); });
+      const uns = Object.keys(porUn).sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
+      const linhas = uns.map(un=>{
+        const key = obra+'|'+un;
+        const aberto = uns.length===1 || expandidos.has(key);
+        const ps = porUn[un].sort((a,b)=>(a.criadoEm||'').localeCompare(b.criadoEm||''));
+        const c = {v:0,g:0,z:0,a:0};
+        ps.forEach(p=>{ if(p.status==='A pedir')c.v++; else if(p.status==='Pedido'||p.status==='Comprado')c.g++; else if(p.status==='Fabricado'||p.status==='Entregue')c.z++; else c.a++; });
+        const chips = `<span class="uchip" style="background:#c0392b" title="a pedir">${c.v}</span><span class="uchip" style="background:#1e8e4e" title="pedido/comprado">${c.g}</span><span class="uchip" style="background:#7c8492" title="fabricado/entregue">${c.z}</span><span class="uchip" style="background:#2f6fb6" title="instalado/conferido">${c.a}</span>`;
+        return `<tr class="apto-cab" onclick="alternarApto(decodeURIComponent('${encodeURIComponent(key)}'))"><td colspan="10">
+          <span class="seta">${aberto?'▾':'▸'}</span> <b>${esc(un)}</b> · ${ps.length} peça(s) ${chips}
+          <button class="btn ouro mini" style="float:right" onclick="event.stopPropagation();novaPeca('${esc(obra)}','${esc(un==='Geral'?'':un)}')">＋ peça</button>
+        </td></tr>` + (aberto ? ps.map(linhaPeca).join('') : '');
       }).join('');
       return `<div class="obra-bloco">
-        <div class="obra-cab"><b>${esc(obra)}</b><span class="qtd">${ps.reduce((a,p)=>a+(p.qtd||1),0)} pedra(s)</span>
+        <div class="obra-cab"><b>${esc(obra)}</b><span class="qtd">${psObra.reduce((a,p)=>a+(p.qtd||1),0)} pedra(s)</span>
           <button class="btn ouro mini add" onclick="novaPeca('${esc(obra)}')">＋ peça</button></div>
         <table>
           <thead><tr><th>Peça</th><th>Ambiente</th><th>Unid.</th><th>Cor</th><th>C (cm)</th><th>L (cm)</th><th>Qtd</th><th>📎</th><th>Etapa</th><th></th></tr></thead>
@@ -727,7 +887,7 @@ function render(){
   if(!obras.length){ kb.innerHTML = '<div class="vazio">Nenhuma obra ainda.</div>'; return; }
   if(!obras.includes(obraKan)) obraKan = obras[0];
   const chips = obras.map(o=>`<button class="ochip${o===obraKan?' ativa':''}" onclick="obraKan='${esc(o)}';render()">${esc(o)}</button>`).join('');
-  const ps = porObra[obraKan]||[];
+  const ps = (porObra[obraKan]||[]).filter(p=>!p.naoTem);
   const cols = STATUS.map(st=>{
     const doSt = ps.filter(p=>p.status===st);
     const cards = doSt.map(p=>{
