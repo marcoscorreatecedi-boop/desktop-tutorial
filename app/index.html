@@ -7,90 +7,90 @@
 <link rel="icon" href="logo.svg" type="image/svg+xml">
 <style>
 :root{
-  --navy:#022057; --navy2:#0a3373; --gold:#CF9F4D; --gold2:#DFB878;
-  --bg:#f4f2ec; --card:#ffffff; --line:#e3ddd0; --txt:#22293a; --mut:#7a8199;
-  --ok:#1e8e4e; --warn:#c77f11; --danger:#c0392b;
+  --navy:#022057; --gold:#CF9F4D; --bg:#f4f2ec; --line:#ddd6c6; --txt:#22293a; --mut:#7a8199; --danger:#c0392b;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI',system-ui,Arial,sans-serif;background:var(--bg);color:var(--txt);font-size:15px}
+body{font-family:'Segoe UI',system-ui,Arial,sans-serif;background:var(--bg);color:var(--txt);font-size:14.5px}
 button{font-family:inherit;cursor:pointer}
-input,select,textarea{font-family:inherit;font-size:14px;padding:7px 9px;border:1px solid var(--line);border-radius:7px;background:#fff;width:100%}
-input:focus,select:focus,textarea:focus{outline:2px solid var(--gold2);border-color:var(--gold)}
-label{font-size:12px;font-weight:600;color:var(--navy);display:block;margin-bottom:3px;text-transform:uppercase;letter-spacing:.4px}
-h2{color:var(--navy)}
+input,select,textarea{font-family:inherit;font-size:14px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:#fff}
+input:focus,select:focus,textarea:focus{outline:2px solid #DFB878;border-color:var(--gold)}
 
 /* ===== Cabeçalho ===== */
-header{background:var(--navy);color:#fff;padding:10px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;position:sticky;top:0;z-index:50;box-shadow:0 2px 8px rgba(0,0,0,.25)}
-header .marca{display:flex;align-items:center;gap:10px}
-header .marca img{height:44px;background:#fff;border-radius:8px;padding:4px 8px}
-header .titulo b{font-size:17px;letter-spacing:.5px}
-header .titulo span{display:block;font-size:11.5px;color:var(--gold2);letter-spacing:2px;text-transform:uppercase}
-header .direita{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.chip{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:20px;padding:5px 13px;font-size:13px;display:inline-flex;align-items:center;gap:6px}
-.chip .dot{width:9px;height:9px;border-radius:50%;background:#aaa}
+header{background:var(--navy);color:#fff;padding:8px 14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;position:sticky;top:0;z-index:50}
+header img{height:38px;background:#fff;border-radius:7px;padding:3px 7px}
+header .titulo b{font-size:16px}
+header .titulo span{display:block;font-size:11px;color:#DFB878;letter-spacing:1.6px;text-transform:uppercase}
+header .dir{margin-left:auto;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.chip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:16px;padding:4px 11px;font-size:12.5px;display:inline-flex;align-items:center;gap:5px}
+.chip .dot{width:8px;height:8px;border-radius:50%;background:#aaa}
 .chip .dot.on{background:#3ddc84}.chip .dot.erro{background:#ff5f4e}
-.btn{border:none;border-radius:8px;padding:9px 15px;font-weight:600;font-size:14px}
-.btn.ouro{background:var(--gold);color:#fff}.btn.ouro:hover{background:#b98a3d}
+.btn{border:none;border-radius:7px;padding:8px 13px;font-weight:600;font-size:13.5px}
+.btn.ouro{background:var(--gold);color:#fff}
 .btn.claro{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.3)}
 .btn.borda{background:#fff;color:var(--navy);border:1.5px solid var(--navy)}
 .btn.verm{background:var(--danger);color:#fff}
-.btn.mini{padding:4px 9px;font-size:12px;border-radius:6px}
+.btn.mini{padding:3px 8px;font-size:12px;border-radius:5px}
 
-/* ===== Barra de ferramentas ===== */
-.tools{display:flex;gap:10px;align-items:end;flex-wrap:wrap;padding:14px 16px 6px}
-.tools .campo{min-width:150px;flex:0 1 210px}
-.tools .abas{margin-left:auto;display:flex;gap:6px}
-.aba{background:#fff;border:1.5px solid var(--line);border-radius:8px;padding:8px 16px;font-weight:600;color:var(--mut)}
+/* ===== Barra ===== */
+.tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px 14px 4px}
+.tools input[type=search]{flex:1 1 200px;max-width:340px}
+.abas{display:flex;gap:6px;margin-left:auto}
+.aba{background:#fff;border:1.5px solid var(--line);border-radius:7px;padding:7px 14px;font-weight:600;color:var(--mut)}
 .aba.ativa{background:var(--navy);border-color:var(--navy);color:#fff}
+.aba.zap{border-color:#1faa53;color:#1faa53}
 
-/* ===== Quadro (kanban) ===== */
-#quadro{display:flex;gap:12px;overflow-x:auto;padding:12px 16px 24px;align-items:flex-start}
-.coluna{background:#ece8dd;border-radius:12px;min-width:250px;width:250px;flex:0 0 auto;padding:10px}
-.coluna h3{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--navy);display:flex;justify-content:space-between;padding:2px 4px 9px}
-.coluna h3 .num{background:var(--navy);color:#fff;border-radius:11px;padding:1px 9px;font-size:12px}
-.cartao{background:var(--card);border-radius:10px;border:1px solid var(--line);border-left:5px solid var(--gold);padding:10px 11px;margin-bottom:9px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.07)}
-.cartao:hover{box-shadow:0 3px 10px rgba(2,32,87,.18)}
-.cartao .tp{font-weight:700;color:var(--navy);font-size:14.5px}
-.cartao .ped{color:var(--mut);font-size:12.5px;margin:2px 0}
-.cartao .dim{font-size:12.5px;background:#f4efe4;border-radius:6px;padding:2px 7px;display:inline-block;margin-top:3px}
-.cartao .rodape{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
-.cartao .obra{font-size:11px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+/* ===== Planilha ===== */
+#planilha{padding:8px 14px 40px;overflow-x:auto}
+.obra-bloco{margin-bottom:22px;min-width:860px}
+.obra-cab{display:flex;align-items:center;gap:10px;background:var(--navy);color:#fff;border-radius:8px 8px 0 0;padding:8px 12px}
+.obra-cab b{font-size:15px;letter-spacing:.5px;text-transform:uppercase}
+.obra-cab .qtd{background:var(--gold);border-radius:11px;padding:1px 10px;font-size:12px;font-weight:700}
+.obra-cab .add{margin-left:auto}
+table{width:100%;border-collapse:collapse;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+th{background:#e9e3d3;color:var(--navy);font-size:11.5px;text-transform:uppercase;letter-spacing:.6px;padding:7px 8px;text-align:left;border-bottom:2px solid var(--line)}
+td{padding:4px 6px;border-bottom:1px solid #eee8d8;vertical-align:middle}
+td input,td select{width:100%;border-color:transparent;background:transparent;border-radius:5px}
+td input:hover,td select:hover{border-color:var(--line);background:#fff}
+td input:focus,td select:focus{background:#fff}
+td.num input{text-align:center;font-variant-numeric:tabular-nums}
+.st{font-weight:700;color:#fff;border-radius:6px;text-align:center}
+.clip{border:none;background:none;font-size:18px;padding:2px 6px;border-radius:6px}
+.clip.tem{background:#e8f5ec}
+.clip.falta{background:#fdecec;animation:pisca 1.6s infinite}
+@keyframes pisca{50%{opacity:.45}}
+.acoes{white-space:nowrap;text-align:right}
+.acoes button{border:none;background:none;font-size:16px;padding:3px 5px;border-radius:6px}
+.acoes button:hover{background:#f0ead9}
+.dica-bancada{font-size:12px;color:#a06a00}
+.vazio{padding:40px;text-align:center;color:var(--mut)}
+.nova-obra{margin:6px 0 30px}
 
-/* ===== Lista ===== */
-#lista{padding:8px 16px 30px;overflow-x:auto}
-table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.08);min-width:900px}
-th{background:var(--navy);color:#fff;font-size:12px;text-transform:uppercase;letter-spacing:.7px;padding:10px 10px;text-align:left}
-td{padding:9px 10px;border-bottom:1px solid var(--line);font-size:13.5px}
-tr:hover td{background:#faf7ef;cursor:pointer}
-.tag{display:inline-block;border-radius:12px;padding:2px 11px;font-size:12px;font-weight:700;color:#fff}
+/* ===== Kanban ===== */
+#kanban{padding:8px 14px 30px}
+.obra-chips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px}
+.ochip{background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:6px 14px;font-weight:600;color:var(--mut);font-size:13px}
+.ochip.ativa{background:var(--gold);border-color:var(--gold);color:#fff}
+.colunas{display:flex;gap:10px;overflow-x:auto;align-items:flex-start}
+.coluna{background:#ece8dd;border-radius:10px;min-width:215px;width:215px;flex:0 0 auto;padding:8px}
+.coluna h3{font-size:12px;letter-spacing:.8px;text-transform:uppercase;color:var(--navy);display:flex;justify-content:space-between;padding:2px 3px 8px}
+.coluna h3 .num{background:var(--navy);color:#fff;border-radius:10px;padding:0 8px;font-size:11.5px}
+.cartao{background:#fff;border-radius:8px;border-left:4px solid var(--gold);padding:8px 9px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.08);cursor:pointer}
+.cartao .tp{font-weight:700;color:var(--navy);font-size:13.5px}
+.cartao .sub{color:var(--mut);font-size:12px;margin:2px 0 6px}
+.cartao .rod{display:flex;justify-content:space-between;align-items:center}
 
 /* ===== Modais ===== */
-.veu{position:fixed;inset:0;background:rgba(10,20,40,.55);display:none;z-index:100;overflow-y:auto;padding:20px 10px}
+.veu{position:fixed;inset:0;background:rgba(10,20,40,.55);display:none;z-index:100;overflow-y:auto;padding:18px 10px}
 .veu.aberto{display:block}
-.janela{background:#fff;border-radius:14px;max-width:1100px;margin:0 auto;padding:20px 22px;box-shadow:0 10px 40px rgba(0,0,0,.4)}
-.janela.estreita{max-width:640px}
-.jtopo{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:8px;flex-wrap:wrap}
-.jtopo h2{font-size:20px}
-.grade{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:11px;margin-bottom:13px}
-.secao{border:1px solid var(--line);border-radius:10px;padding:13px;margin-bottom:13px;background:#fdfcf8}
-.secao>h4{color:var(--gold);font-size:12.5px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;border-bottom:1px dashed var(--line);padding-bottom:6px}
-.linha-ck{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
-.ck{display:inline-flex;align-items:center;gap:5px;font-size:13.5px;font-weight:500;color:var(--txt)}
-.ck input{width:auto}
-.form-e-desenho{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-@media(max-width:900px){.form-e-desenho{grid-template-columns:1fr}}
-.desenho-caixa{position:sticky;top:10px}
-.desenho-caixa svg{width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:10px}
-.dica{font-size:12px;color:var(--mut);margin-top:4px}
-.cuba-item{border:1px dashed var(--gold);border-radius:9px;padding:10px;margin-bottom:9px;background:#fffdf6}
-.cuba-item .grade{margin-bottom:0}
-.hist{font-size:13px;max-height:170px;overflow-y:auto;border:1px solid var(--line);border-radius:8px;padding:8px;background:#fff}
-.hist div{padding:3px 0;border-bottom:1px dotted var(--line)}
-.rodape-form{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:6px}
-.passos{font-size:14px;line-height:1.65}
-.passos li{margin-bottom:9px}
+.janela{background:#fff;border-radius:12px;max-width:620px;margin:0 auto;padding:18px 20px;box-shadow:0 10px 40px rgba(0,0,0,.4)}
+.jtopo{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px;flex-wrap:wrap}
+.jtopo h2{font-size:18px;color:var(--navy)}
+.passos{font-size:14px;line-height:1.6;margin:8px 0 8px 18px}
+.passos li{margin-bottom:8px}
 .passos code{background:#f0ecdf;padding:1px 6px;border-radius:5px;font-size:13px}
 #linkCompart{word-break:break-all;font-size:12px;background:#f0ecdf;border-radius:8px;padding:9px;display:none;margin-top:9px}
+#anexoImg{max-width:100%;border:1px solid var(--line);border-radius:8px;margin-top:10px;display:none}
+.aviso-bancada{background:#fff6e3;border:1px solid #ecd9a8;border-radius:8px;padding:9px 11px;color:#7a5c17;font-size:13.5px;margin-bottom:10px}
 
 /* ===== Impressão ===== */
 #areaImpressao{display:none}
@@ -98,312 +98,200 @@ tr:hover td{background:#faf7ef;cursor:pointer}
   body>*{display:none!important}
   #areaImpressao{display:block!important;font-size:13px}
   #areaImpressao .cab{display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #022057;padding-bottom:8px;margin-bottom:12px}
-  #areaImpressao .cab img{height:52px}
-  #areaImpressao table{min-width:0;box-shadow:none}
+  #areaImpressao .cab img{height:48px}
   #areaImpressao td,#areaImpressao th{border:1px solid #999;padding:5px 8px}
-  #areaImpressao th{background:#022057!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  #areaImpressao svg{max-width:100%;height:auto}
+  #areaImpressao th{background:#022057!important;color:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #areaImpressao img.des{max-width:100%;max-height:560px;border:1px solid #999;margin-top:8px}
 }
-@media(max-width:700px){
-  header .titulo b{font-size:14px}
-  .tools .campo{flex:1 1 45%}
-}
-.vazio{padding:40px;text-align:center;color:var(--mut)}
+@media(max-width:700px){ header .titulo b{font-size:13.5px} }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="marca">
-    <img src="logo.svg" alt="CivilNobre">
-    <div class="titulo"><b>Pedidos de Granito &amp; Pedras</b><span>Controle de peças · obras CivilNobre</span></div>
-  </div>
-  <div class="direita">
-    <span class="chip" id="chipSync" title="Estado da sincronização"><span class="dot" id="dotSync"></span><span id="txtSync">Somente neste aparelho</span></span>
-    <span class="chip" id="chipUser" title="Trocar usuário" style="cursor:pointer">👤 <span id="nomeUser">—</span></span>
-    <button class="btn claro" onclick="abrirSync()">⚙️ Sincronização</button>
-    <button class="btn ouro" onclick="novaPeca()">＋ Nova peça</button>
+  <img src="logo.svg" alt="CivilNobre">
+  <div class="titulo"><b>Pedidos de Granito</b><span>CivilNobre · etapas por obra</span></div>
+  <div class="dir">
+    <span class="chip"><span class="dot" id="dotSync"></span><span id="txtSync">Conectando...</span></span>
+    <span class="chip" id="chipUser" style="cursor:pointer">👤 <span id="nomeUser">—</span></span>
+    <button class="btn claro" onclick="abrirSync()">⚙️</button>
+    <button class="btn ouro" onclick="novaObra()">＋ Nova obra</button>
   </div>
 </header>
 
 <div class="tools">
-  <div class="campo"><label>Obra</label><select id="fObra" onchange="render()"><option value="">Todas</option></select></div>
-  <div class="campo"><label>Tipo de peça</label><select id="fTipo" onchange="render()"><option value="">Todos</option></select></div>
-  <div class="campo"><label>Status</label><select id="fStatus" onchange="render()"><option value="">Todos</option></select></div>
-  <div class="campo" style="flex:1 1 240px"><label>Buscar</label><input id="fBusca" placeholder="pedra, ambiente, observação..." oninput="render()"></div>
+  <input type="search" id="fBusca" placeholder="🔎 Buscar peça, cor, obra..." oninput="render()">
   <div class="abas">
-    <button class="aba ativa" id="abaQuadro" onclick="trocarAba('quadro')">Quadro</button>
-    <button class="aba" id="abaLista" onclick="trocarAba('lista')">Lista</button>
-    <button class="aba" style="border-color:#1faa53;color:#1faa53" onclick="resumoWhats()" title="Gera o resumo das peças filtradas para colar no WhatsApp">📲 Resumo</button>
+    <button class="aba ativa" id="abaPlan" onclick="trocarAba('plan')">📋 Planilha</button>
+    <button class="aba" id="abaKan" onclick="trocarAba('kan')">📌 Etapas</button>
+    <button class="aba zap" onclick="resumoWhats()">📲 Resumo</button>
   </div>
 </div>
 
-<div id="quadro"></div>
-<div id="lista" style="display:none"></div>
+<div id="planilha"></div>
+<div id="kanban" style="display:none"></div>
 
-<!-- ============ MODAL: FICHA DA PEÇA ============ -->
-<div class="veu" id="veuForm">
+<!-- ===== MODAL: DESENHO / DETALHE ===== -->
+<div class="veu" id="veuAnexo">
   <div class="janela">
-    <div class="jtopo">
-      <h2 id="tituloForm">Nova peça</h2>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn borda" id="btnDuplicar" onclick="duplicarDoForm()" style="display:none" title="Cria uma cópia com todas as especificações para você mudar só o que precisa">⧉ Duplicar</button>
-        <button class="btn borda" onclick="imprimirFicha()">🖨️ Imprimir ficha</button>
-        <button class="btn verm" id="btnExcluir" onclick="excluirPeca()" style="display:none">Excluir</button>
-        <button class="btn borda" onclick="fecharForm()">Fechar</button>
+    <div class="jtopo"><h2 id="anexoTitulo">Desenho da peça</h2>
+      <div style="display:flex;gap:7px">
+        <button class="btn borda mini" onclick="imprimirFicha()">🖨️ Imprimir</button>
+        <button class="btn borda mini" onclick="fecharAnexo()">Fechar</button>
       </div>
     </div>
-    <div class="form-e-desenho">
-      <div>
-        <div class="secao"><h4>Identificação</h4>
-          <div class="grade">
-            <div><label>Obra / Empreendimento *</label><input id="c_obra" list="dlObras" placeholder="Ex.: Residencial Santorini"><datalist id="dlObras"></datalist></div>
-            <div><label>Unidade / Apto</label><input id="c_unidade" placeholder="Ex.: Apto 302"></div>
-            <div><label>Ambiente (onde será usado)</label><input id="c_ambiente" list="dlAmb" placeholder="Ex.: Cozinha"><datalist id="dlAmb"><option>Cozinha</option><option>Banheiro suíte</option><option>Banheiro social</option><option>Lavabo</option><option>Área de serviço</option><option>Área gourmet / churrasqueira</option><option>Sala</option><option>Quarto</option><option>Varanda</option><option>Entrada / portal</option><option>Janelas</option></datalist></div>
-            <div><label>Tipo de peça *</label><select id="c_tipoPeca" onchange="mudouTipo()"></select></div>
-          </div>
-        </div>
-
-        <div class="secao"><h4>Pedra</h4>
-          <div class="grade">
-            <div><label>Material</label><select id="c_tipoPedra"><option>Granito</option><option>Mármore</option><option>Quartzo</option><option>Porcelanato</option><option>Ardósia</option><option>Outro</option></select></div>
-            <div><label>Nome / cor da pedra</label><input id="c_nomePedra" list="dlPedras" placeholder="Ex.: Cinza Andorinha"><datalist id="dlPedras"><option>Cinza Andorinha</option><option>Cinza Corumbá</option><option>Branco Itaúnas</option><option>Branco Siena</option><option>Preto São Gabriel</option><option>Verde Ubatuba</option><option>Amarelo Ornamental</option><option>Ocre Itabira</option><option>Branco Prime (quartzo)</option></datalist></div>
-            <div><label>Espessura (cm)</label><input id="c_espessura" type="number" step="0.5" min="0" value="2"></div>
-          </div>
-        </div>
-
-        <div class="secao"><h4>Dimensões principais <span style="color:var(--mut);text-transform:none;letter-spacing:0">— sem a medida? preencha 0</span></h4>
-          <div class="grade">
-            <div><label>Comprimento (cm) *</label><input id="c_comprimento" type="number" step="0.5" min="0" oninput="desenhar()"></div>
-            <div><label>Largura / profundidade (cm) *</label><input id="c_largura" type="number" step="0.5" min="0" oninput="desenhar()"></div>
-            <div><label>Quantidade (peças iguais)</label><input id="c_qtd" type="number" min="1" value="1"></div>
-          </div>
-        </div>
-
-        <div class="secao" id="secBancada"><h4>Bancada — detalhes</h4>
-          <div class="grade">
-            <div><label>Rodabanca? (frontão)</label><select id="c_rodabancaTem" onchange="desenhar()"><option value="nao">Não tem</option><option value="sim">Sim</option></select></div>
-            <div><label>Altura rodabanca (cm)</label><input id="c_rodabancaAltura" type="number" step="0.5" min="0" value="0" oninput="desenhar()"></div>
-            <div style="grid-column:1/-1"><label>Rodabanca em quais lados?</label>
-              <div class="linha-ck">
-                <span class="ck"><input type="checkbox" id="c_rb_fundo" checked onchange="desenhar()">Fundo (parede)</span>
-                <span class="ck"><input type="checkbox" id="c_rb_esq" onchange="desenhar()">Lateral esquerda</span>
-                <span class="ck"><input type="checkbox" id="c_rb_dir" onchange="desenhar()">Lateral direita</span>
-              </div>
-            </div>
-            <div><label>Testeira / saia?</label><select id="c_testeiraTem" onchange="desenhar()"><option value="nao">Não tem</option><option value="sim">Sim</option></select></div>
-            <div><label>Altura testeira (cm)</label><input id="c_testeiraAltura" type="number" step="0.5" min="0" value="0" oninput="desenhar()"></div>
-            <div><label>Parte úmida (cm)</label><input id="c_parteUmida" type="number" step="0.5" min="0" value="0" oninput="desenhar()"></div>
-            <div><label>Lado da parte úmida</label><select id="c_ladoUmido" onchange="desenhar()"><option value="esquerda">Esquerda</option><option value="direita">Direita</option></select></div>
-            <div><label>Parte seca (cm)</label><input id="c_parteSeca" type="number" step="0.5" min="0" value="0" oninput="desenhar()"></div>
-          </div>
-          <div style="margin-top:6px">
-            <label>Bojos / cubas</label>
-            <div id="listaCubas"></div>
-            <button class="btn borda mini" onclick="addCuba()">＋ Adicionar bojo/cuba</button>
-            <div class="dica">Posição medida da <b>borda esquerda</b> e da <b>frente</b> da bancada até o início da cuba. Cuba de <b>sobrepor</b> = fica sobre a bancada.</div>
-          </div>
-        </div>
-
-        <div class="secao" id="secPeitoril"><h4>Peitoril / Soleira — detalhes</h4>
-          <div class="grade">
-            <div><label>Pingadeira?</label><select id="c_pingadeira" onchange="desenhar()"><option value="nao">Não</option><option value="sim">Sim</option></select></div>
-            <div><label>Transpasse cada lado (cm)</label><input id="c_transpasse" type="number" step="0.5" min="0" value="0"></div>
-          </div>
-        </div>
-
-        <div class="secao"><h4>Acabamento</h4>
-          <div class="grade">
-            <div><label>Friso?</label><select id="c_frisoTem" onchange="desenhar()"><option value="nao">Não tem</option><option value="sim">Sim</option></select></div>
-            <div><label>Onde é o friso?</label><input id="c_frisoOnde" placeholder="Ex.: borda frontal, 2 cm da borda"></div>
-            <div><label>Borda</label><select id="c_borda"><option>Reta</option><option>Meia esquadria</option><option>Boleada</option><option>Bisotê</option><option>Dupla (encorpada)</option></select></div>
-          </div>
-          <label>Polimento em quais lados?</label>
-          <div class="linha-ck" style="margin-bottom:6px">
-            <span class="ck"><input type="checkbox" id="c_pol_frente" checked onchange="desenhar()">Frente</span>
-            <span class="ck"><input type="checkbox" id="c_pol_fundo" onchange="desenhar()">Fundo</span>
-            <span class="ck"><input type="checkbox" id="c_pol_esq" onchange="desenhar()">Esquerda</span>
-            <span class="ck"><input type="checkbox" id="c_pol_dir" onchange="desenhar()">Direita</span>
-            <span class="ck"><input type="checkbox" id="c_pol_topo" checked>Face de cima</span>
-          </div>
-        </div>
-
-        <div class="secao"><h4>Desenho anexado (foto ou arquivo)</h4>
-          <div class="dica" id="dicaDesenhoBancada" style="background:#fff6e3;border:1px solid #ecd9a8;border-radius:8px;padding:9px 11px;color:#7a5c17">
-            ⚠️ Na <b>bancada</b>, anexe um desenho (pode ser foto do rascunho no papel) marcando obrigatoriamente:
-            <b>comprimento total, largura, posição e medida do bojo, parte úmida e seca, rodabanca e testeira</b> — além das especificações da pedra.
-          </div>
-          <div style="display:flex;gap:8px;align-items:center;margin-top:9px;flex-wrap:wrap">
-            <label class="btn borda mini" style="display:inline-block">📎 Anexar desenho / tirar foto<input type="file" accept="image/*" style="display:none" onchange="anexarDesenho(this)"></label>
-            <button class="btn verm mini" id="btnRemFoto" style="display:none" onclick="removerDesenho()">remover desenho</button>
-          </div>
-          <img id="fotoPreview" alt="Desenho anexado" style="display:none;max-width:100%;margin-top:9px;border:1px solid var(--line);border-radius:8px">
-        </div>
-
-        <div class="secao"><h4>Observações</h4>
-          <textarea id="c_obs" rows="3" placeholder="Detalhes extras, recortes, tomadas, cooktop, etc."></textarea>
-        </div>
-      </div>
-
-      <div class="desenho-caixa">
-        <div class="secao"><h4>Desenho da peça (gerado automaticamente)</h4>
-          <div id="svgWrap"></div>
-          <div class="dica">O desenho atualiza conforme você preenche as medidas. Vista de cima; frente da peça embaixo.</div>
-        </div>
-        <div class="secao"><h4>Status</h4>
-          <div class="grade">
-            <div><label>Status atual</label><select id="c_status"></select></div>
-          </div>
-          <label>Histórico</label>
-          <div class="hist" id="histBox"><div style="color:var(--mut)">Sem movimentações ainda.</div></div>
-        </div>
-        <div class="rodape-form">
-          <button class="btn ouro" style="font-size:16px;padding:11px 26px" onclick="salvarPeca()">💾 Salvar peça</button>
-        </div>
-      </div>
+    <div class="aviso-bancada" id="avisoBancada" style="display:none">
+      ⚠️ <b>Bancada:</b> a especificação é o desenho. Anexe o desenho (pode ser foto do rascunho) com
+      <b>todas as medidas: comprimento, largura, bojo, partes úmida/seca, rodabanca e testeira</b>.
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <label class="btn borda mini" style="display:inline-block">📎 Anexar desenho / tirar foto<input type="file" accept="image/*" style="display:none" onchange="anexarDesenho(this)"></label>
+      <button class="btn verm mini" id="btnRemFoto" style="display:none" onclick="removerDesenho()">remover desenho</button>
+    </div>
+    <img id="anexoImg" alt="Desenho anexado">
+    <div style="margin-top:12px">
+      <label style="font-size:12px;font-weight:700;color:var(--navy);text-transform:uppercase">Observações</label>
+      <textarea id="anexoObs" rows="2" style="width:100%" placeholder="Recortes, detalhes, prazo..." onchange="salvarObs()"></textarea>
     </div>
   </div>
 </div>
 
-<!-- ============ MODAL: SINCRONIZAÇÃO ============ -->
+<!-- ===== MODAL: SINCRONIZAÇÃO / BACKUP ===== -->
 <div class="veu" id="veuSync">
-  <div class="janela estreita">
-    <div class="jtopo"><h2>Sincronização entre aparelhos</h2><button class="btn borda" onclick="fecharSync()">Fechar</button></div>
-    <div style="background:#e8f5ec;border:1px solid #bfe3c9;border-radius:9px;padding:11px 13px;margin-bottom:13px;line-height:1.5">
-      ✅ <b>A nuvem rápida da equipe já vem ligada</b> — todos que abrirem este app já veem as mesmas peças, em tempo real, sem configurar nada. Cada aparelho também guarda uma cópia local.
+  <div class="janela">
+    <div class="jtopo"><h2>Sincronização e backup</h2><button class="btn borda mini" onclick="fecharSync()">Fechar</button></div>
+    <div style="background:#e8f5ec;border:1px solid #bfe3c9;border-radius:9px;padding:10px 12px;margin-bottom:12px;line-height:1.5;font-size:13.5px">
+      ✅ <b>A nuvem da equipe já vem ligada</b> — todos que abrirem o app veem e atualizam as mesmas peças ao mesmo tempo.
     </div>
-    <p style="margin-bottom:10px;line-height:1.5"><b>Opcional (recomendado quando puder):</b> ativar o banco <b>Google Firebase</b> — gratuito e mais robusto/privado para guardar o histórico da empresa. Configura <b>uma única vez</b>:</p>
+    <p style="font-size:13.5px;line-height:1.5;margin-bottom:8px"><b>Opcional:</b> plugar um banco Google Firebase (gratuito, mais robusto e privado). Uma única vez:</p>
     <ol class="passos">
-      <li>Acesse <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a> com sua conta Google e clique em <b>Criar projeto</b> (ex.: <code>civilnobre-granito</code>). Pode desligar o Analytics.</li>
-      <li>No menu <b>Criação → Firestore Database</b> → <b>Criar banco de dados</b> → local <code>southamerica-east1</code> → iniciar no <b>modo de teste</b>.</li>
-      <li>Em <b>Regras</b>, publique: <code>allow read, write: if true;</code> (dentro do match já existente).</li>
-      <li>Na tela inicial do projeto, clique no ícone <b>&lt;/&gt;</b> (app da Web), registre com qualquer nome e copie o objeto <code>firebaseConfig</code>.</li>
-      <li>Cole o conteúdo aqui embaixo e clique em Ativar:</li>
+      <li>Crie um projeto em <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a></li>
+      <li><b>Criação → Firestore Database → Criar banco</b> (modo de teste, <code>southamerica-east1</code>)</li>
+      <li>Ícone <b>&lt;/&gt;</b> na tela inicial → copie o <code>firebaseConfig</code> e cole aqui:</li>
     </ol>
-    <textarea id="cfgFirebase" rows="7" placeholder='{ "apiKey": "...", "authDomain": "...", "projectId": "...", ... }' style="font-family:monospace;font-size:12.5px"></textarea>
-    <div class="rodape-form" style="margin-top:10px">
-      <button class="btn verm mini" id="btnDesligarSync" onclick="desligarSync()" style="display:none">Desativar sincronização</button>
-      <button class="btn borda" onclick="gerarLink()" id="btnLink" style="display:none">🔗 Gerar link para a equipe</button>
-      <button class="btn ouro" onclick="ativarSync()">Ativar sincronização</button>
+    <textarea id="cfgFirebase" rows="5" placeholder='{ "apiKey": "...", "projectId": "..." }' style="width:100%;font-family:monospace;font-size:12px"></textarea>
+    <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:9px">
+      <button class="btn verm mini" id="btnDesligarSync" onclick="desligarSync()" style="display:none">Desativar</button>
+      <button class="btn borda mini" onclick="gerarLink()" id="btnLink" style="display:none">🔗 Link para a equipe</button>
+      <button class="btn ouro mini" onclick="ativarSync()">Ativar Firebase</button>
     </div>
     <div id="linkCompart"></div>
-    <hr style="margin:16px 0;border:none;border-top:1px solid var(--line)">
-    <h4 style="color:var(--navy);margin-bottom:8px">Backup manual</h4>
+    <hr style="margin:14px 0;border:none;border-top:1px solid var(--line)">
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button class="btn borda" onclick="exportar()">⬇️ Exportar dados (JSON)</button>
-      <label class="btn borda" style="display:inline-block">⬆️ Importar dados<input type="file" accept=".json" style="display:none" onchange="importar(this)"></label>
+      <button class="btn borda mini" onclick="exportar()">⬇️ Exportar backup</button>
+      <label class="btn borda mini" style="display:inline-block">⬆️ Importar backup<input type="file" accept=".json" style="display:none" onchange="importar(this)"></label>
     </div>
   </div>
 </div>
 
-<!-- ============ ÁREA DE IMPRESSÃO ============ -->
 <div id="areaImpressao"></div>
 
 <script>
-/* ================= DADOS BÁSICOS ================= */
+/* ================= BÁSICO ================= */
 const STATUS = ['A pedir','Pedido','Comprado','Fabricado','Entregue','Instalado','Conferido'];
 const CORES_STATUS = {'A pedir':'#8a8fa3','Pedido':'#2f6fb6','Comprado':'#7b52ab','Fabricado':'#c77f11','Entregue':'#0e8f8f','Instalado':'#3aa655','Conferido':'#1e8e4e'};
-const TIPOS_PECA = ['Bancada','Peitoril','Soleira','Pedra de churrasqueira','Pedra de portal','Lavatório / tampo banheiro','Prateleira','Divisória','Baguete / filete','Outro'];
-const K_PEDIDOS='cn_pedidos_v1', K_USER='cn_usuario', K_CFG='cn_fbcfg';
+const TIPOS = ['Bancada','Peitoril','Soleira','Churrasqueira','Portal','Lavatório','Prateleira','Outro'];
+const K_PEDIDOS='cn_pedidos_v1', K_USER='cn_usuario', K_CFG='cn_fbcfg', K_FOTOS='cn_fotos', K_TUMBAS='cn_tumbas', K_CLIENTE='cn_cliente';
 
 let pedidos = JSON.parse(localStorage.getItem(K_PEDIDOS) || '{}');
-let usuario = localStorage.getItem(K_USER) || '';
-let editandoId = null;
-let fb = null; // {db, m: módulo firestore}
-
-/* Nuvem rápida da equipe (sem conta): canal ntfy.sh exclusivo da CivilNobre */
-const NTFY = 'https://ntfy.sh/civilnobre-granito-mq7x2v9k4t';
-const K_TUMBAS = 'cn_tumbas', K_CLIENTE = 'cn_cliente';
+let fotos = JSON.parse(localStorage.getItem(K_FOTOS) || '{}');
 const tumbas = JSON.parse(localStorage.getItem(K_TUMBAS) || '{}');
+let usuario = localStorage.getItem(K_USER) || '';
 let clienteId = localStorage.getItem(K_CLIENTE);
 if(!clienteId){ clienteId = 'c' + Math.random().toString(36).slice(2,10); localStorage.setItem(K_CLIENTE, clienteId); }
+let fb = null, anexoId = null, obraKan = '';
 
-/* ================= UTILIDADES ================= */
+const NTFY = 'https://ntfy.sh/civilnobre-granito-mq7x2v9k4t';
 const $ = id => document.getElementById(id);
 const num = v => { const n = parseFloat(v); return isNaN(n) ? 0 : n; };
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const agora = () => new Date().toISOString();
-const fmtData = iso => { if(!iso) return ''; const d = new Date(iso); return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}); };
 const novoId = () => 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2,8);
-
-function salvarLocal(){ localStorage.setItem(K_PEDIDOS, JSON.stringify(pedidos)); }
+const salvarLocal = () => localStorage.setItem(K_PEDIDOS, JSON.stringify(pedidos));
+const salvarFotos = () => { try{ localStorage.setItem(K_FOTOS, JSON.stringify(fotos)); }catch(e){ alert('Memória de fotos cheia — exporte um backup e remova desenhos antigos.'); } };
+const salvarTumbas = () => localStorage.setItem(K_TUMBAS, JSON.stringify(tumbas));
+const corDe = p => p.cor || p.nomePedra || p.tipoPedra || '';
+const ehBancada = p => /Bancada/i.test(p.tipoPeca||'');
 
 function pedirNome(force){
   if(usuario && !force) return;
-  const n = prompt('Quem é você? (aparece no histórico das peças)\nEx.: Marcos, Ana Paula, Marmoraria...', usuario || '');
-  if(n){ usuario = n.trim(); localStorage.setItem(K_USER, usuario); }
+  const n = prompt('Quem é você? (aparece no histórico)\nEx.: Marcos, Ana Paula, Marmoraria...', usuario||'');
+  if(n) { usuario = n.trim(); localStorage.setItem(K_USER, usuario); }
   $('nomeUser').textContent = usuario || 'definir';
 }
 $('chipUser').onclick = () => pedirNome(true);
 
-/* ================= SINCRONIZAÇÃO (Firebase) ================= */
+/* ================= SINCRONIZAÇÃO ================= */
 function setSync(estado, texto){
   $('dotSync').className = 'dot' + (estado==='on'?' on':estado==='erro'?' erro':'');
   $('txtSync').textContent = texto;
 }
 function pushRemoto(p){
-  if(fb){
-    fb.m.setDoc(fb.m.doc(fb.db,'pedidos',p.id), JSON.parse(JSON.stringify(p))).catch(e=>{console.error(e); setSync('erro','Erro ao enviar');});
-  } else {
-    ntPub({t:'peca', p});
-  }
+  if(fb) fb.m.setDoc(fb.m.doc(fb.db,'pedidos',p.id), JSON.parse(JSON.stringify(p))).catch(e=>{console.error(e); setSync('erro','Erro ao enviar');});
+  else ntPub({t:'peca', p});
 }
 function apagarRemoto(id){
   tumbas[id] = agora(); salvarTumbas();
   if(fb) fb.m.deleteDoc(fb.m.doc(fb.db,'pedidos',id)).catch(console.error);
   else ntPub({t:'del', id, em: tumbas[id]});
 }
-
-/* ---- Nuvem rápida (ntfy.sh, sem conta) ---- */
-function salvarTumbas(){ localStorage.setItem(K_TUMBAS, JSON.stringify(tumbas)); }
-function ntPub(obj){ try{ fetch(NTFY, {method:'POST', body: JSON.stringify(obj)}).catch(()=>{}); }catch(e){} }
+function pushFoto(id){
+  const d = fotos[id]; if(!d) return;
+  if(fb){ fb.m.setDoc(fb.m.doc(fb.db,'fotos',id), {d, em: agora()}).catch(console.error); }
+  else{
+    const CH = 3000, total = Math.ceil(d.length/CH);
+    ntPub({t:'foto0', id, total, em: agora()});
+    for(let i=0;i<total;i++) setTimeout(()=> ntPub({t:'fotoc', id, i, d:d.slice(i*CH,(i+1)*CH)}), 300+i*250);
+  }
+}
+function ntPub(obj){ try{ fetch(NTFY,{method:'POST',body:JSON.stringify(obj)}).catch(()=>{}); }catch(e){} }
 let ultimoGossip = 0;
+const fotoBuffers = {};
 function ntAplicar(msg){
   let d; try{ d = JSON.parse(msg); }catch(e){ return; }
-  if(d.t === 'peca' && d.p && d.p.id){
-    if(tumbas[d.p.id] && tumbas[d.p.id] >= (d.p.atualizadoEm || '')) return;
+  if(d.t==='peca' && d.p && d.p.id){
+    if(tumbas[d.p.id] && tumbas[d.p.id] >= (d.p.atualizadoEm||'')) return;
     const cur = pedidos[d.p.id];
-    if(!cur || (d.p.atualizadoEm || '') > (cur.atualizadoEm || '')){ pedidos[d.p.id] = d.p; salvarLocal(); render(); }
-  } else if(d.t === 'foto0' || d.t === 'fotoc'){
-    ntAplicarFoto(d);
-  } else if(d.t === 'del' && d.id){
-    if(!tumbas[d.id] || tumbas[d.id] < (d.em || '')){ tumbas[d.id] = d.em || agora(); salvarTumbas(); }
+    if(!cur || (d.p.atualizadoEm||'') > (cur.atualizadoEm||'')){ pedidos[d.p.id]=d.p; salvarLocal(); render(); }
+  } else if(d.t==='foto0' && d.id){ fotoBuffers[d.id]={total:d.total,partes:{}}; }
+  else if(d.t==='fotoc' && d.id && fotoBuffers[d.id]){
+    const b = fotoBuffers[d.id]; b.partes[d.i]=d.d;
+    if(Object.keys(b.partes).length===b.total){
+      let inteiro=''; for(let i=0;i<b.total;i++){ if(b.partes[i]===undefined) return; inteiro+=b.partes[i]; }
+      fotos[d.id]=inteiro; salvarFotos(); delete fotoBuffers[d.id];
+      if(anexoId===d.id) mostrarAnexo();
+      render();
+    }
+  } else if(d.t==='del' && d.id){
+    if(!tumbas[d.id] || tumbas[d.id] < (d.em||'')){ tumbas[d.id]=d.em||agora(); salvarTumbas(); }
     if(pedidos[d.id]){ delete pedidos[d.id]; salvarLocal(); render(); }
-  } else if(d.t === 'hello' && d.de !== clienteId){
-    // outro aparelho entrou: reenvia as peças (no máx. 1x por minuto, espaçado)
-    if(Date.now() - ultimoGossip < 60000) return;
+  } else if(d.t==='hello' && d.de!==clienteId){
+    if(Date.now()-ultimoGossip < 60000) return;
     ultimoGossip = Date.now();
     const todas = Object.values(pedidos);
     setTimeout(()=>{
-      todas.forEach((p,i)=> setTimeout(()=> ntPub({t:'peca', p}), i*200));
-      Object.keys(fotos).forEach((id,i)=> setTimeout(()=> pushFoto(id), todas.length*200 + 800 + i*9000));
-    }, 400 + Math.random()*1500);
+      todas.forEach((p,i)=> setTimeout(()=> ntPub({t:'peca',p}), i*200));
+      Object.keys(fotos).forEach((id,i)=> setTimeout(()=> pushFoto(id), todas.length*200+800+i*9000));
+    }, 400+Math.random()*1500);
   }
 }
 async function iniciarNtfy(){
-  setSync('off','Conectando à nuvem...');
+  setSync('off','Conectando...');
   let conectou = false;
   try{
-    const r = await fetch(NTFY + '/json?poll=1&since=12h');
-    (await r.text()).split('\n').filter(Boolean).forEach(l=>{
-      try{ const ev = JSON.parse(l); if(ev.event === 'message') ntAplicar(ev.message); }catch(e){}
-    });
+    const r = await fetch(NTFY+'/json?poll=1&since=12h');
+    (await r.text()).split('\n').filter(Boolean).forEach(l=>{ try{ const ev=JSON.parse(l); if(ev.event==='message') ntAplicar(ev.message); }catch(e){} });
     conectou = true;
-  }catch(e){ console.error('ntfy poll', e); }
+  }catch(e){ console.error(e); }
   try{
-    const es = new EventSource(NTFY + '/sse');
-    es.onmessage = e => { try{ const ev = JSON.parse(e.data); if(ev.event === 'message' || ev.message) ntAplicar(ev.message); }catch(err){} };
-    es.onopen = () => setSync('on','Sincronizado ✓ nuvem da equipe');
+    const es = new EventSource(NTFY+'/sse');
+    es.onmessage = e => { try{ const ev=JSON.parse(e.data); if(ev.message) ntAplicar(ev.message); }catch(err){} };
+    es.onopen = () => setSync('on','Sincronizado ✓');
     es.onerror = () => { if(!conectou) setSync('erro','Sem conexão — modo local'); };
-  }catch(e){ console.error('ntfy sse', e); }
-  if(conectou){
-    setSync('on','Sincronizado ✓ nuvem da equipe');
-    ntPub({t:'hello', de: clienteId});
-  } else {
-    setSync('erro','Sem conexão — modo local');
-  }
+  }catch(e){ console.error(e); }
+  if(conectou){ setSync('on','Sincronizado ✓'); ntPub({t:'hello', de:clienteId}); }
+  else setSync('erro','Sem conexão — modo local');
 }
-
 async function iniciarSync(){
   const raw = localStorage.getItem(K_CFG);
   if(!raw){ iniciarNtfy(); return; }
@@ -414,34 +302,28 @@ async function iniciarSync(){
     const m = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
     const app = a.initializeApp(cfg);
     fb = { db: m.getFirestore(app), m };
-    // envia o que só existe localmente
-    const locais = Object.values(pedidos);
     m.getDocs(m.collection(fb.db,'pedidos')).then(snap=>{
-      const remotos = new Set(); snap.forEach(d=>remotos.add(d.id));
-      locais.forEach(p=>{ if(!remotos.has(p.id)) pushRemoto(p); });
+      const rem = new Set(); snap.forEach(d=>rem.add(d.id));
+      Object.values(pedidos).forEach(p=>{ if(!rem.has(p.id)) pushRemoto(p); });
     }).catch(console.error);
-    // escuta em tempo real
     m.onSnapshot(m.collection(fb.db,'pedidos'), snap=>{
       snap.docChanges().forEach(ch=>{
         if(ch.type==='removed'){ delete pedidos[ch.doc.id]; return; }
-        const d = ch.doc.data();
-        const atual = pedidos[d.id];
-        if(!atual || (d.atualizadoEm||'') >= (atual.atualizadoEm||'')) pedidos[d.id] = d;
+        const d = ch.doc.data(), cur = pedidos[d.id];
+        if(!cur || (d.atualizadoEm||'') >= (cur.atualizadoEm||'')) pedidos[d.id]=d;
       });
-      salvarLocal(); render();
-      setSync('on','Sincronizado ✓ tempo real');
+      salvarLocal(); render(); setSync('on','Sincronizado ✓ Firebase');
     }, err=>{ console.error(err); setSync('erro','Erro de conexão'); });
     m.onSnapshot(m.collection(fb.db,'fotos'), snap=>{
       snap.docChanges().forEach(ch=>{
         if(ch.type==='removed'){ delete fotos[ch.doc.id]; return; }
         fotos[ch.doc.id] = ch.doc.data().d;
-        if(editandoId === ch.doc.id){ fotoAtual = fotos[ch.doc.id]; mostrarFoto(); }
+        if(anexoId===ch.doc.id) mostrarAnexo();
       });
-      salvarFotos();
+      salvarFotos(); render();
     }, err=> console.error(err));
   }catch(e){ console.error(e); setSync('erro','Falha ao conectar'); }
 }
-
 function abrirSync(){
   const raw = localStorage.getItem(K_CFG);
   if(raw){ $('cfgFirebase').value = raw; $('btnLink').style.display='inline-block'; $('btnDesligarSync').style.display='inline-block'; }
@@ -451,38 +333,30 @@ function fecharSync(){ $('veuSync').classList.remove('aberto'); }
 function ativarSync(){
   let t = $('cfgFirebase').value.trim();
   if(!t){ alert('Cole o firebaseConfig primeiro.'); return; }
-  // aceita tanto JSON puro quanto o trecho "const firebaseConfig = {...}"
   const ini = t.indexOf('{'), fim = t.lastIndexOf('}');
   if(ini>=0 && fim>ini) t = t.slice(ini, fim+1);
   t = t.replace(/(\w+)\s*:/g,'"$1":').replace(/'/g,'"').replace(/"{2,}/g,'"').replace(/,\s*}/g,'}');
-  let cfg; try{ cfg = JSON.parse(t); }catch(e){ alert('Não consegui ler a configuração. Confira se copiou o objeto completo { ... }.'); return; }
-  if(!cfg.projectId || !cfg.apiKey){ alert('Configuração incompleta: precisa ter apiKey e projectId.'); return; }
+  let cfg; try{ cfg = JSON.parse(t); }catch(e){ alert('Não consegui ler a configuração. Copie o objeto { ... } completo.'); return; }
+  if(!cfg.projectId || !cfg.apiKey){ alert('Faltou apiKey ou projectId.'); return; }
   localStorage.setItem(K_CFG, JSON.stringify(cfg));
-  fecharSync();
   location.reload();
 }
-function desligarSync(){ if(confirm('Desativar a sincronização neste aparelho? (os dados locais são mantidos)')){ localStorage.removeItem(K_CFG); location.reload(); } }
+function desligarSync(){ if(confirm('Desativar o Firebase neste aparelho?')){ localStorage.removeItem(K_CFG); location.reload(); } }
 function gerarLink(){
   const raw = localStorage.getItem(K_CFG); if(!raw) return;
   const url = location.origin + location.pathname + '#cfg=' + btoa(unescape(encodeURIComponent(raw)));
-  const box = $('linkCompart');
-  box.style.display='block';
-  box.textContent = url;
+  const box = $('linkCompart'); box.style.display='block'; box.textContent = url;
   navigator.clipboard && navigator.clipboard.writeText(url).then(()=>{ box.textContent = '✓ Copiado! Envie no WhatsApp da equipe:\n' + url; });
 }
-// se abriu por link compartilhado, ativa a config automaticamente
 (function(){
   if(location.hash.startsWith('#cfg=')){
-    try{
-      const cfg = decodeURIComponent(escape(atob(location.hash.slice(5))));
-      JSON.parse(cfg);
-      localStorage.setItem(K_CFG, cfg);
-      history.replaceState(null,'',location.pathname);
-    }catch(e){ console.error('link de config inválido', e); }
+    try{ const cfg = decodeURIComponent(escape(atob(location.hash.slice(5)))); JSON.parse(cfg);
+      localStorage.setItem(K_CFG, cfg); history.replaceState(null,'',location.pathname);
+    }catch(e){ console.error(e); }
   }
 })();
 
-/* ================= EXPORTAR / IMPORTAR ================= */
+/* ================= BACKUP ================= */
 function exportar(){
   const blob = new Blob([JSON.stringify({pedidos, fotos},null,2)],{type:'application/json'});
   const a = document.createElement('a');
@@ -496,377 +370,137 @@ function importar(inp){
   r.onload = () => {
     try{
       const dados = JSON.parse(r.result);
-      const pecas = dados.pedidos || dados; // aceita backup novo (com fotos) e antigo
+      const pecas = dados.pedidos || dados;
       let n = 0;
       Object.values(pecas).forEach(p=>{ if(p && p.id){ pedidos[p.id]=p; pushRemoto(p); n++; } });
-      if(dados.fotos){ Object.entries(dados.fotos).forEach(([id,d])=>{ fotos[id]=d; }); salvarFotos(); }
+      if(dados.fotos){ Object.entries(dados.fotos).forEach(([id,d])=> fotos[id]=d); salvarFotos(); }
       salvarLocal(); render();
       alert(n + ' peças importadas.');
     }catch(e){ alert('Arquivo inválido.'); }
   };
-  r.readAsText(f);
-  inp.value='';
+  r.readAsText(f); inp.value='';
 }
 
-/* ================= FORMULÁRIO ================= */
-function preencherSelects(){
-  $('c_tipoPeca').innerHTML = TIPOS_PECA.map(t=>`<option>${t}</option>`).join('');
-  $('c_status').innerHTML = STATUS.map(s=>`<option>${s}</option>`).join('');
-  $('fTipo').innerHTML = '<option value="">Todos</option>' + TIPOS_PECA.map(t=>`<option>${t}</option>`).join('');
-  $('fStatus').innerHTML = '<option value="">Todos</option>' + STATUS.map(s=>`<option>${s}</option>`).join('');
+/* ================= AÇÕES ================= */
+function novaObra(){
+  pedirNome();
+  const nome = prompt('Nome da obra:\nEx.: Concórdia, Santorini...');
+  if(!nome) return;
+  novaPeca(nome.trim());
 }
-function mudouTipo(){
-  const t = $('c_tipoPeca').value;
-  const ehBancada = /Bancada|Lavatório|churrasqueira/i.test(t);
-  $('secBancada').style.display = ehBancada ? '' : 'none';
-  $('secPeitoril').style.display = /Peitoril|Soleira/i.test(t) ? '' : 'none';
-  $('dicaDesenhoBancada').style.display = ehBancada ? '' : 'none';
-  desenhar();
+function novaPeca(obra){
+  pedirNome();
+  const p = {id:novoId(), obra, unidade:'', ambiente:'', tipoPeca:'Peitoril', cor:'', comprimento:0, largura:0, qtd:1,
+    temDesenho:false, obs:'', status:'A pedir', criadoEm:agora(), criadoPor:usuario, atualizadoEm:agora(), atualizadoPor:usuario,
+    historico:[{status:'A pedir', data:agora(), por:usuario}]};
+  pedidos[p.id]=p; salvarLocal(); pushRemoto(p); render();
+  setTimeout(()=>{ const el = document.querySelector(`[data-id="${p.id}"][data-campo="ambiente"]`); if(el) el.focus(); }, 80);
+}
+function atualizarCampo(id, campo, valor){
+  const p = pedidos[id]; if(!p) return;
+  pedirNome();
+  if(['comprimento','largura','qtd'].includes(campo)) valor = num(valor);
+  if(campo==='qtd' && valor<1) valor = 1;
+  const antes = p[campo];
+  if(antes === valor) return;
+  p[campo] = valor;
+  p.atualizadoEm = agora(); p.atualizadoPor = usuario;
+  if(campo==='status'){ p.historico = p.historico||[]; p.historico.push({status:valor, data:agora(), por:usuario}); }
+  salvarLocal(); pushRemoto(p);
+  if(campo==='status' || campo==='tipoPeca' || campo==='obra'){
+    if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
+    render();
+  }
+}
+function avancar(id, ev){
+  if(ev) ev.stopPropagation();
+  const p = pedidos[id]; if(!p) return;
+  const i = STATUS.indexOf(p.status);
+  if(i<0 || i>=STATUS.length-1) return;
+  if(ehBancada(p) && !fotos[id] && p.status==='A pedir'){
+    if(!confirm('⚠️ Bancada sem desenho anexado. A especificação da bancada é o desenho.\n\nAvançar assim mesmo?')) return;
+  }
+  atualizarCampo(id, 'status', STATUS[i+1]);
+}
+function duplicar(id, ev){
+  if(ev) ev.stopPropagation();
+  const orig = pedidos[id]; if(!orig) return;
+  pedirNome();
+  const p = JSON.parse(JSON.stringify(orig));
+  p.id = novoId(); p.status='A pedir';
+  p.criadoEm=agora(); p.criadoPor=usuario; p.atualizadoEm=agora(); p.atualizadoPor=usuario;
+  p.historico=[{status:'A pedir', data:agora(), por:usuario}];
+  pedidos[p.id]=p; salvarLocal(); pushRemoto(p);
+  if(fotos[id]){ fotos[p.id]=fotos[id]; salvarFotos(); pushFoto(p.id); p.temDesenho=true; }
+  render();
+  setTimeout(()=>{ const el = document.querySelector(`[data-id="${p.id}"][data-campo="largura"]`); if(el) el.focus(); }, 80);
+}
+function excluir(id, ev){
+  if(ev) ev.stopPropagation();
+  const p = pedidos[id]; if(!p) return;
+  if(!confirm(`Excluir "${p.tipoPeca||'peça'} ${p.ambiente||''}" da obra ${p.obra}?`)) return;
+  delete pedidos[id];
+  if(fotos[id]){ delete fotos[id]; salvarFotos(); }
+  salvarLocal(); apagarRemoto(id); render();
 }
 
-/* ================= DESENHO ANEXADO (FOTO) ================= */
-const K_FOTOS = 'cn_fotos';
-let fotos = JSON.parse(localStorage.getItem(K_FOTOS) || '{}');
-let fotoAtual = null; // dataURI da foto carregada no formulário
-function salvarFotos(){
-  try{ localStorage.setItem(K_FOTOS, JSON.stringify(fotos)); }
-  catch(e){ alert('A memória de fotos deste aparelho encheu. Exporte um backup e remova desenhos antigos.'); }
+/* ================= DESENHO ANEXADO ================= */
+function abrirAnexo(id){
+  anexoId = id;
+  const p = pedidos[id]; if(!p) return;
+  $('anexoTitulo').textContent = `${p.tipoPeca||'Peça'} ${p.ambiente||''} — ${p.obra||''}`;
+  $('avisoBancada').style.display = ehBancada(p) ? '' : 'none';
+  $('anexoObs').value = p.obs || '';
+  mostrarAnexo();
+  $('veuAnexo').classList.add('aberto');
+}
+function fecharAnexo(){ $('veuAnexo').classList.remove('aberto'); anexoId = null; }
+function mostrarAnexo(){
+  const img = $('anexoImg'), d = anexoId ? fotos[anexoId] : null;
+  if(d){ img.src = d; img.style.display='block'; $('btnRemFoto').style.display='inline-block'; }
+  else { img.removeAttribute('src'); img.style.display='none'; $('btnRemFoto').style.display='none'; }
 }
 function anexarDesenho(inp){
-  const f = inp.files[0]; if(!f) return;
+  const f = inp.files[0]; if(!f || !anexoId) return;
   const rd = new FileReader();
   rd.onload = () => {
     const img = new Image();
     img.onload = () => {
-      const MAX = 1000;
-      const esc = Math.min(1, MAX / Math.max(img.width, img.height));
+      const MAX = 1000, escl = Math.min(1, MAX/Math.max(img.width, img.height));
       const cv = document.createElement('canvas');
-      cv.width = Math.round(img.width * esc); cv.height = Math.round(img.height * esc);
-      cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
-      fotoAtual = cv.toDataURL('image/jpeg', 0.62);
-      mostrarFoto();
+      cv.width = Math.round(img.width*escl); cv.height = Math.round(img.height*escl);
+      cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);
+      fotos[anexoId] = cv.toDataURL('image/jpeg',0.62);
+      salvarFotos(); pushFoto(anexoId);
+      atualizarCampo(anexoId,'temDesenho',true);
+      mostrarAnexo(); render();
     };
     img.src = rd.result;
   };
-  rd.readAsDataURL(f);
-  inp.value = '';
+  rd.readAsDataURL(f); inp.value='';
 }
-function mostrarFoto(){
-  const el = $('fotoPreview');
-  if(fotoAtual){ el.src = fotoAtual; el.style.display = 'block'; $('btnRemFoto').style.display = 'inline-block'; }
-  else { el.removeAttribute('src'); el.style.display = 'none'; $('btnRemFoto').style.display = 'none'; }
+function removerDesenho(){
+  if(!anexoId) return;
+  delete fotos[anexoId]; salvarFotos();
+  atualizarCampo(anexoId,'temDesenho',false);
+  mostrarAnexo(); render();
 }
-function removerDesenho(){ fotoAtual = null; mostrarFoto(); }
-function pushFoto(id){
-  const d = fotos[id]; if(!d) return;
-  if(fb){
-    fb.m.setDoc(fb.m.doc(fb.db,'fotos',id), {d, em: agora()}).catch(console.error);
-  } else {
-    const CH = 3000, total = Math.ceil(d.length / CH);
-    ntPub({t:'foto0', id, total, em: agora()});
-    for(let i = 0; i < total; i++){
-      setTimeout(()=> ntPub({t:'fotoc', id, i, d: d.slice(i*CH, (i+1)*CH)}), 300 + i*250);
-    }
-  }
-}
-const fotoBuffers = {};
-function ntAplicarFoto(d){
-  if(d.t === 'foto0' && d.id){ fotoBuffers[d.id] = {total: d.total, partes: {}}; return; }
-  if(d.t === 'fotoc' && d.id && fotoBuffers[d.id]){
-    const b = fotoBuffers[d.id];
-    b.partes[d.i] = d.d;
-    if(Object.keys(b.partes).length === b.total){
-      let inteiro = '';
-      for(let i = 0; i < b.total; i++){ if(b.partes[i] === undefined) return; inteiro += b.partes[i]; }
-      fotos[d.id] = inteiro; salvarFotos(); delete fotoBuffers[d.id];
-      if(editandoId === d.id){ fotoAtual = inteiro; mostrarFoto(); }
-    }
-  }
-}
-function addCuba(c){
-  c = c || {tipo:'Embutida (sob a bancada)', comprimento:50, largura:40, distEsquerda:0, distFrente:0};
-  const div = document.createElement('div');
-  div.className='cuba-item';
-  div.innerHTML = `
-    <div class="grade" style="grid-template-columns:repeat(auto-fit,minmax(120px,1fr))">
-      <div style="grid-column:1/-1;display:flex;justify-content:space-between;align-items:center">
-        <label style="margin:0">Cuba / bojo</label>
-        <button class="btn verm mini" onclick="this.closest('.cuba-item').remove();desenhar()">remover</button>
-      </div>
-      <div style="grid-column:1/-1"><select class="cb_tipo" onchange="desenhar()">
-        <option>Embutida (sob a bancada)</option><option>Sobrepor (sobre a bancada)</option><option>Esculpida na pedra</option><option>Semi-encaixe</option>
-      </select></div>
-      <div><label>Compr. (cm)</label><input class="cb_c" type="number" step="0.5" min="0" value="${c.comprimento}" oninput="desenhar()"></div>
-      <div><label>Larg. (cm)</label><input class="cb_l" type="number" step="0.5" min="0" value="${c.largura}" oninput="desenhar()"></div>
-      <div><label>Dist. esquerda (cm)</label><input class="cb_de" type="number" step="0.5" min="0" value="${c.distEsquerda}" oninput="desenhar()"></div>
-      <div><label>Dist. frente (cm)</label><input class="cb_df" type="number" step="0.5" min="0" value="${c.distFrente}" oninput="desenhar()"></div>
-    </div>`;
-  $('listaCubas').appendChild(div);
-  div.querySelector('.cb_tipo').value = c.tipo;
-  desenhar();
-}
-function lerCubas(){
-  return [...document.querySelectorAll('.cuba-item')].map(el=>({
-    tipo: el.querySelector('.cb_tipo').value,
-    comprimento: num(el.querySelector('.cb_c').value),
-    largura: num(el.querySelector('.cb_l').value),
-    distEsquerda: num(el.querySelector('.cb_de').value),
-    distFrente: num(el.querySelector('.cb_df').value)
-  }));
-}
-
-function lerForm(){
-  return {
-    obra: $('c_obra').value.trim(), unidade: $('c_unidade').value.trim(), ambiente: $('c_ambiente').value.trim(),
-    tipoPeca: $('c_tipoPeca').value, tipoPedra: $('c_tipoPedra').value, nomePedra: $('c_nomePedra').value.trim(),
-    espessura: num($('c_espessura').value), comprimento: num($('c_comprimento').value), largura: num($('c_largura').value),
-    qtd: Math.max(1, num($('c_qtd').value) || 1),
-    rodabancaTem: $('c_rodabancaTem').value, rodabancaAltura: num($('c_rodabancaAltura').value),
-    rodabancaLados: {fundo: $('c_rb_fundo').checked, esquerda: $('c_rb_esq').checked, direita: $('c_rb_dir').checked},
-    testeiraTem: $('c_testeiraTem').value, testeiraAltura: num($('c_testeiraAltura').value),
-    parteUmida: num($('c_parteUmida').value), parteSeca: num($('c_parteSeca').value), ladoUmido: $('c_ladoUmido').value,
-    cubas: lerCubas(),
-    pingadeira: $('c_pingadeira').value, transpasse: num($('c_transpasse').value),
-    frisoTem: $('c_frisoTem').value, frisoOnde: $('c_frisoOnde').value.trim(), borda: $('c_borda').value,
-    polimento: {frente: $('c_pol_frente').checked, fundo: $('c_pol_fundo').checked, esquerda: $('c_pol_esq').checked, direita: $('c_pol_dir').checked, topo: $('c_pol_topo').checked},
-    obs: $('c_obs').value.trim(), status: $('c_status').value
-  };
-}
-function preencherForm(p){
-  $('c_obra').value=p.obra||''; $('c_unidade').value=p.unidade||''; $('c_ambiente').value=p.ambiente||'';
-  $('c_tipoPeca').value=p.tipoPeca||'Bancada'; $('c_tipoPedra').value=p.tipoPedra||'Granito'; $('c_nomePedra').value=p.nomePedra||'';
-  $('c_espessura').value=p.espessura??2; $('c_comprimento').value=p.comprimento||''; $('c_largura').value=p.largura||'';
-  $('c_qtd').value=p.qtd||1;
-  $('c_rodabancaTem').value=p.rodabancaTem||'nao'; $('c_rodabancaAltura').value=p.rodabancaAltura||0;
-  const rbl=p.rodabancaLados||{fundo:true};
-  $('c_rb_fundo').checked=!!rbl.fundo; $('c_rb_esq').checked=!!rbl.esquerda; $('c_rb_dir').checked=!!rbl.direita;
-  $('c_testeiraTem').value=p.testeiraTem||'nao'; $('c_testeiraAltura').value=p.testeiraAltura||0;
-  $('c_parteUmida').value=p.parteUmida||0; $('c_parteSeca').value=p.parteSeca||0; $('c_ladoUmido').value=p.ladoUmido||'esquerda';
-  $('listaCubas').innerHTML=''; (p.cubas||[]).forEach(addCuba);
-  $('c_pingadeira').value=p.pingadeira||'nao'; $('c_transpasse').value=p.transpasse||0;
-  $('c_frisoTem').value=p.frisoTem||'nao'; $('c_frisoOnde').value=p.frisoOnde||''; $('c_borda').value=p.borda||'Reta';
-  const pol=p.polimento||{frente:true,topo:true};
-  $('c_pol_frente').checked=!!pol.frente; $('c_pol_fundo').checked=!!pol.fundo; $('c_pol_esq').checked=!!pol.esquerda; $('c_pol_dir').checked=!!pol.direita; $('c_pol_topo').checked=!!pol.topo;
-  $('c_obs').value=p.obs||''; $('c_status').value=p.status||'A pedir';
-  const h=$('histBox');
-  h.innerHTML=(p.historico&&p.historico.length)?p.historico.map(x=>`<div><b>${esc(x.status)}</b> — ${fmtData(x.data)} · ${esc(x.por||'')}</div>`).join(''):'<div style="color:var(--mut)">Sem movimentações ainda.</div>';
-}
-
-function novaPeca(){
-  editandoId=null;
-  $('tituloForm').textContent='Nova peça';
-  $('btnExcluir').style.display='none';
-  $('btnDuplicar').style.display='none';
-  preencherForm({tipoPeca:'Bancada', status:'A pedir'});
-  fotoAtual=null; mostrarFoto();
-  mudouTipo();
-  $('veuForm').classList.add('aberto');
-}
-function abrirPeca(id){
-  const p=pedidos[id]; if(!p) return;
-  editandoId=id;
-  $('tituloForm').textContent=(p.tipoPeca||'Peça')+' — '+(p.ambiente||'')+(p.unidade?' · '+p.unidade:'');
-  $('btnExcluir').style.display='inline-block';
-  $('btnDuplicar').style.display='inline-block';
-  preencherForm(p);
-  fotoAtual=fotos[id]||null; mostrarFoto();
-  mudouTipo();
-  $('veuForm').classList.add('aberto');
-}
-function duplicarPeca(id,ev){
-  if(ev) ev.stopPropagation();
-  const orig = pedidos[id]; if(!orig) return;
-  const copia = JSON.parse(JSON.stringify(orig));
-  delete copia.id;
-  copia.status = 'A pedir';
-  editandoId = null;
-  $('tituloForm').textContent = 'Cópia de: ' + (orig.tipoPeca||'peça') + (orig.ambiente?' '+orig.ambiente:'') + ' — ajuste o que muda e salve';
-  $('btnExcluir').style.display='none';
-  $('btnDuplicar').style.display='none';
-  preencherForm(copia);
-  fotoAtual = fotos[id] || null; mostrarFoto();
-  mudouTipo();
-  $('veuForm').classList.add('aberto');
-}
-function duplicarDoForm(){ if(editandoId) duplicarPeca(editandoId); }
-function fecharForm(){ $('veuForm').classList.remove('aberto'); }
-
-function salvarPeca(){
-  pedirNome();
-  const dados=lerForm();
-  if(!dados.obra){ alert('Informe a obra.'); return; }
-  if(!dados.tipoPeca){ alert('Informe o tipo de peça.'); return; }
-  if(/Bancada/i.test(dados.tipoPeca) && !fotoAtual){
-    if(!confirm('⚠️ Bancada sem desenho anexado.\n\nO ideal é anexar o desenho com comprimento, largura, posição do bojo, partes úmida/seca, rodabanca e testeira.\n\nSalvar assim mesmo?')) return;
-  }
-  dados.temDesenho = !!fotoAtual;
-  let p;
-  if(editandoId && pedidos[editandoId]){
-    p=pedidos[editandoId];
-    const statusAntes=p.status;
-    Object.assign(p,dados);
-    p.atualizadoEm=agora(); p.atualizadoPor=usuario;
-    if(statusAntes!==p.status){ p.historico=p.historico||[]; p.historico.push({status:p.status,data:agora(),por:usuario}); }
-  }else{
-    p=Object.assign({id:novoId(),criadoEm:agora(),criadoPor:usuario,atualizadoEm:agora(),historico:[{status:dados.status,data:agora(),por:usuario}]},dados);
-    pedidos[p.id]=p;
-  }
-  if(fotoAtual){
-    if(fotos[p.id] !== fotoAtual){ fotos[p.id] = fotoAtual; salvarFotos(); pushFoto(p.id); }
-  } else if(fotos[p.id]){
-    delete fotos[p.id]; salvarFotos();
-  }
-  salvarLocal(); pushRemoto(p); render(); fecharForm();
-}
-function excluirPeca(){
-  if(!editandoId) return;
-  if(!confirm('Excluir esta peça definitivamente?')) return;
-  delete pedidos[editandoId];
-  if(fotos[editandoId]){ delete fotos[editandoId]; salvarFotos(); }
-  salvarLocal(); apagarRemoto(editandoId); render(); fecharForm();
-}
-function avancarStatus(id,ev){
-  ev.stopPropagation();
-  pedirNome();
-  const p=pedidos[id]; if(!p) return;
-  const i=STATUS.indexOf(p.status);
-  if(i<0||i>=STATUS.length-1) return;
-  p.status=STATUS[i+1];
-  p.atualizadoEm=agora(); p.atualizadoPor=usuario;
-  p.historico=p.historico||[]; p.historico.push({status:p.status,data:agora(),por:usuario});
-  salvarLocal(); pushRemoto(p); render();
-}
-
-/* ================= DESENHO TÉCNICO (SVG) ================= */
-function desenhar(){
-  $('svgWrap').innerHTML = gerarSVG(lerForm());
-}
-function gerarSVG(p, W, H){
-  W=W||760; H=H||430;
-  const C=p.comprimento, L=p.largura;
-  if(!C||!L) return `<svg viewBox="0 0 ${W} ${H}"><rect width="${W}" height="${H}" fill="#fdfcf8"/><text x="${W/2}" y="${H/2}" text-anchor="middle" fill="#9aa0b5" font-size="18">Preencha comprimento e largura para gerar o desenho</text></svg>`;
-  const mEsq=95,mDir=70,mTopo=64,mBaixo=80;
-  const s=Math.min((W-mEsq-mDir)/C,(H-mTopo-mBaixo)/L);
-  const w=C*s,h=L*s,x0=mEsq+((W-mEsq-mDir)-w)/2,y0=mTopo+((H-mTopo-mBaixo)-h)/2;
-  const x1=x0+w,y1=y0+h;
-  const navy='#022057',gold='#CF9F4D';
-  let g='';
-  const ehBancada=/Bancada|Lavatório|churrasqueira/i.test(p.tipoPeca||'');
-  const ehPeitoril=/Peitoril|Soleira/i.test(p.tipoPeca||'');
-
-  // pedra
-  g+=`<rect x="${x0}" y="${y0}" width="${w}" height="${h}" fill="#efe9db" stroke="${navy}" stroke-width="2.5"/>`;
-  // veios decorativos
-  g+=`<path d="M${x0+w*.15} ${y0} q ${w*.1} ${h*.5} 0 ${h}" stroke="#ddd2ba" fill="none"/><path d="M${x0+w*.55} ${y0} q ${w*.12} ${h*.6} ${w*.05} ${h}" stroke="#ddd2ba" fill="none"/>`;
-
-  // partes úmida/seca
-  if(ehBancada&&p.parteUmida>0){
-    const wu=Math.min(p.parteUmida,C)*s;
-    const ux=p.ladoUmido==='direita'?x1-wu:x0;
-    g+=`<rect x="${ux}" y="${y0}" width="${wu}" height="${h}" fill="#7fb2d8" opacity="0.28"/>`;
-    g+=`<text x="${ux+wu/2}" y="${y0+16}" text-anchor="middle" font-size="11.5" fill="#1c5b8a" font-weight="bold">PARTE ÚMIDA ${p.parteUmida} cm</text>`;
-    if(p.parteSeca>0){
-      const sx=p.ladoUmido==='direita'?x0:ux+wu;
-      const ws=Math.min(p.parteSeca,C-p.parteUmida)*s;
-      g+=`<text x="${sx+ws/2}" y="${y0+16}" text-anchor="middle" font-size="11.5" fill="#8a6d1c" font-weight="bold">PARTE SECA ${p.parteSeca} cm</text>`;
-    }
-  }
-
-  // rodabanca
-  if(ehBancada&&p.rodabancaTem==='sim'){
-    const t=11,l=p.rodabancaLados||{};
-    const hachura=`fill="${gold}" opacity="0.85"`;
-    if(l.fundo) g+=`<rect x="${x0}" y="${y0-t}" width="${w}" height="${t}" ${hachura}/><text x="${x0+w/2}" y="${y0-t-4}" text-anchor="middle" font-size="11" fill="${gold}" font-weight="bold">RODABANCA h=${p.rodabancaAltura||'?'} cm</text>`;
-    if(l.esquerda) g+=`<rect x="${x0-t}" y="${y0}" width="${t}" height="${h}" ${hachura}/>`;
-    if(l.direita) g+=`<rect x="${x1}" y="${y0}" width="${t}" height="${h}" ${hachura}/>`;
-  }
-  // testeira
-  if(ehBancada&&p.testeiraTem==='sim'){
-    g+=`<rect x="${x0}" y="${y1}" width="${w}" height="9" fill="${navy}"/><text x="${x0+w/2}" y="${y1+21}" text-anchor="middle" font-size="11" fill="${navy}" font-weight="bold">TESTEIRA h=${p.testeiraAltura||'?'} cm</text>`;
-  }
-  // pingadeira
-  if(ehPeitoril&&p.pingadeira==='sim'){
-    g+=`<line x1="${x0}" y1="${y1-8}" x2="${x1}" y2="${y1-8}" stroke="${navy}" stroke-dasharray="6 4" stroke-width="1.6"/><text x="${x0+6}" y="${y1-13}" font-size="10.5" fill="${navy}">pingadeira</text>`;
-  }
-  // friso
-  if(p.frisoTem==='sim'){
-    g+=`<rect x="${x0+7}" y="${y0+7}" width="${w-14}" height="${h-14}" fill="none" stroke="${gold}" stroke-width="1.4" stroke-dasharray="3 3"/>`;
-  }
-  // cubas
-  (p.cubas||[]).forEach((c,i)=>{
-    if(!c.comprimento||!c.largura) return;
-    const cw=c.comprimento*s,ch=c.largura*s;
-    const cx=x0+c.distEsquerda*s,cy=y1-(c.distFrente*s)-ch;
-    const sobre=/Sobrepor/i.test(c.tipo);
-    g+=`<rect x="${cx}" y="${cy}" width="${cw}" height="${ch}" rx="${Math.min(cw,ch)*.22}" fill="${sobre?'#ffffff':'#dfe8ef'}" stroke="#345a80" stroke-width="2" ${/Esculpida/i.test(c.tipo)?'stroke-dasharray="7 3"':''}/>`;
-    g+=`<rect x="${cx+5}" y="${cy+5}" width="${cw-10}" height="${ch-10}" rx="${Math.min(cw,ch)*.18}" fill="none" stroke="#345a80" stroke-width="1" opacity="0.55"/>`;
-    g+=`<circle cx="${cx+cw/2}" cy="${cy-6}" r="4" fill="#345a80"/>`; // torneira
-    g+=`<text x="${cx+cw/2}" y="${cy+ch/2+4}" text-anchor="middle" font-size="10.5" fill="#345a80" font-weight="bold">CUBA ${i+1} ${sobre?'(sobrepor)':''} ${c.comprimento}×${c.largura}</text>`;
-    // cotas da cuba
-    if(c.distEsquerda>0){
-      g+=`<line x1="${x0}" y1="${cy+ch/2}" x2="${cx}" y2="${cy+ch/2}" stroke="#c0392b" stroke-width="1" stroke-dasharray="4 3"/><text x="${(x0+cx)/2}" y="${cy+ch/2-4}" text-anchor="middle" font-size="10" fill="#c0392b">${c.distEsquerda}</text>`;
-    }
-  });
-  // polimento (bordas em dourado grosso)
-  const pol=p.polimento||{};
-  const pw=5;
-  if(pol.frente) g+=`<line x1="${x0}" y1="${y1}" x2="${x1}" y2="${y1}" stroke="${gold}" stroke-width="${pw}"/>`;
-  if(pol.fundo) g+=`<line x1="${x0}" y1="${y0}" x2="${x1}" y2="${y0}" stroke="${gold}" stroke-width="${pw}"/>`;
-  if(pol.esquerda) g+=`<line x1="${x0}" y1="${y0}" x2="${x0}" y2="${y1}" stroke="${gold}" stroke-width="${pw}"/>`;
-  if(pol.direita) g+=`<line x1="${x1}" y1="${y0}" x2="${x1}" y2="${y1}" stroke="${gold}" stroke-width="${pw}"/>`;
-
-  // cotas principais
-  const seta=(xa,ya,xb,yb,txt,rot)=>{
-    let t=`<line x1="${xa}" y1="${ya}" x2="${xb}" y2="${yb}" stroke="${navy}" stroke-width="1.3" marker-start="url(#seta)" marker-end="url(#seta)"/>`;
-    const mx=(xa+xb)/2,my=(ya+yb)/2;
-    t+=`<text x="${mx}" y="${my-6}" text-anchor="middle" font-size="13.5" font-weight="bold" fill="${navy}" ${rot?`transform="rotate(-90 ${mx} ${my})"`:''}>${txt}</text>`;
-    return t;
-  };
-  g+=seta(x0,y1+40,x1,y1+40,`${C} cm`);
-  g+=`<line x1="${x0}" y1="${y1+4}" x2="${x0}" y2="${y1+46}" stroke="#999" stroke-width="0.8"/><line x1="${x1}" y1="${y1+4}" x2="${x1}" y2="${y1+46}" stroke="#999" stroke-width="0.8"/>`;
-  g+=seta(x1+34,y0,x1+34,y1,`${L} cm`,true);
-  g+=`<line x1="${x1+4}" y1="${y0}" x2="${x1+40}" y2="${y0}" stroke="#999" stroke-width="0.8"/><line x1="${x1+4}" y1="${y1}" x2="${x1+40}" y2="${y1}" stroke="#999" stroke-width="0.8"/>`;
-
-  // rótulos
-  g+=`<text x="${x0+w/2}" y="${y1+68}" text-anchor="middle" font-size="11.5" fill="#8a8fa3">FRENTE (vista de cima) · espessura ${p.espessura||'?'} cm · borda ${esc(p.borda||'reta').toLowerCase()}</text>`;
-  g+=`<text x="${x0-12}" y="${y0+h/2}" text-anchor="middle" font-size="10.5" fill="#8a8fa3" transform="rotate(-90 ${x0-12} ${y0+h/2})">ESQUERDA</text>`;
-  // legenda polimento
-  g+=`<line x1="18" y1="${H-14}" x2="46" y2="${H-14}" stroke="${gold}" stroke-width="5"/><text x="52" y="${H-10}" font-size="10.5" fill="#666">= lado com polimento</text>`;
-  if(p.frisoTem==='sim') g+=`<line x1="205" y1="${H-14}" x2="233" y2="${H-14}" stroke="${gold}" stroke-width="1.5" stroke-dasharray="3 3"/><text x="239" y="${H-10}" font-size="10.5" fill="#666">= friso ${esc(p.frisoOnde||'')}</text>`;
-
-  return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
-    <defs><marker id="seta" markerWidth="9" markerHeight="9" refX="4.5" refY="4.5" orient="auto"><path d="M1,1 L8,4.5 L1,8" fill="none" stroke="${navy}" stroke-width="1.2"/></marker></defs>
-    <rect width="${W}" height="${H}" fill="#fdfcf8"/>${g}</svg>`;
-}
+function salvarObs(){ if(anexoId) atualizarCampo(anexoId,'obs',$('anexoObs').value.trim()); }
 
 /* ================= IMPRESSÃO ================= */
 function imprimirFicha(){
-  const p = editandoId && pedidos[editandoId] ? pedidos[editandoId] : Object.assign({id:'—'},lerForm());
-  const dadosAtuais = lerForm(); Object.assign(p, dadosAtuais);
-  const pol=p.polimento||{};
-  const lados=['frente','fundo','esquerda','direita','topo'].filter(l=>pol[l]).join(', ')||'—';
-  const rb=p.rodabancaTem==='sim'?`Sim — h=${p.rodabancaAltura} cm (${['fundo','esquerda','direita'].filter(l=>p.rodabancaLados&&p.rodabancaLados[l]).join(', ')})`:'Não';
-  const cubasTxt=(p.cubas||[]).map((c,i)=>`Cuba ${i+1}: ${c.tipo}, ${c.comprimento}×${c.largura} cm, a ${c.distEsquerda} cm da esquerda e ${c.distFrente} cm da frente`).join('<br>')||'—';
-  $('areaImpressao').innerHTML=`
-    <div class="cab"><img src="logo.svg"><div style="text-align:right"><b style="font-size:17px;color:#022057">FICHA DE PEÇA — ${esc(p.tipoPeca)}</b><br><span style="color:#666">Emitida em ${new Date().toLocaleDateString('pt-BR')} por ${esc(usuario||'—')}</span></div></div>
-    <table>
-      <tr><th colspan="4">Identificação</th></tr>
-      <tr><td><b>Obra:</b> ${esc(p.obra)}</td><td><b>Unidade:</b> ${esc(p.unidade)||'—'}</td><td><b>Ambiente:</b> ${esc(p.ambiente)||'—'}</td><td><b>Status:</b> ${esc(p.status)}</td></tr>
-      <tr><th colspan="4">Pedra</th></tr>
-      <tr><td><b>Material:</b> ${esc(p.tipoPedra)}</td><td><b>Pedra/cor:</b> ${esc(p.nomePedra)||'—'}</td><td><b>Espessura:</b> ${p.espessura} cm</td><td><b>Qtd:</b> ${p.qtd||1}</td></tr>
-      <tr><th colspan="4">Medidas e detalhes</th></tr>
-      <tr><td><b>Comprimento:</b> ${p.comprimento} cm</td><td><b>Largura:</b> ${p.largura} cm</td><td><b>Parte úmida:</b> ${p.parteUmida||0} cm (${esc(p.ladoUmido||'')})</td><td><b>Parte seca:</b> ${p.parteSeca||0} cm</td></tr>
-      <tr><td colspan="2"><b>Rodabanca:</b> ${rb}</td><td colspan="2"><b>Testeira/saia:</b> ${p.testeiraTem==='sim'?('Sim — h='+p.testeiraAltura+' cm'):'Não'}</td></tr>
-      <tr><td colspan="4"><b>Cubas/bojos:</b><br>${cubasTxt}</td></tr>
-      <tr><th colspan="4">Acabamento</th></tr>
-      <tr><td><b>Friso:</b> ${p.frisoTem==='sim'?('Sim — '+esc(p.frisoOnde||'')):'Não'}</td><td><b>Borda:</b> ${esc(p.borda)}</td><td colspan="2"><b>Polimento:</b> ${lados}</td></tr>
-      ${/Peitoril|Soleira/i.test(p.tipoPeca)?`<tr><td colspan="2"><b>Pingadeira:</b> ${p.pingadeira==='sim'?'Sim':'Não'}</td><td colspan="2"><b>Transpasse:</b> ${p.transpasse||0} cm por lado</td></tr>`:''}
-      <tr><td colspan="4"><b>Observações:</b> ${esc(p.obs)||'—'}</td></tr>
+  const p = anexoId ? pedidos[anexoId] : null; if(!p) return;
+  $('areaImpressao').innerHTML = `
+    <div class="cab"><img src="logo.svg"><div style="text-align:right"><b style="font-size:16px;color:#022057">FICHA — ${esc(p.tipoPeca)} ${esc(p.ambiente||'')}</b><br><span style="color:#666">Obra ${esc(p.obra)} · ${new Date().toLocaleDateString('pt-BR')} · ${esc(usuario||'')}</span></div></div>
+    <table style="width:100%;border-collapse:collapse">
+      <tr><th>Obra</th><th>Unid.</th><th>Peça</th><th>Cor</th><th>Medidas</th><th>Qtd</th><th>Status</th></tr>
+      <tr><td>${esc(p.obra)}</td><td>${esc(p.unidade)||'—'}</td><td>${esc(p.tipoPeca)} ${esc(p.ambiente||'')}</td><td>${esc(corDe(p))||'—'}</td>
+      <td>${ehBancada(p)?'ver desenho':((p.comprimento||'?')+' × '+(p.largura||'?')+' cm')}</td><td>${p.qtd||1}</td><td>${esc(p.status)}</td></tr>
+      ${p.obs?`<tr><td colspan="7"><b>Obs:</b> ${esc(p.obs)}</td></tr>`:''}
     </table>
-    <div style="margin-top:14px">${gerarSVG(p,760,430)}</div>
-    ${fotoAtual?`<div style="margin-top:12px;page-break-inside:avoid"><b style="color:#022057">DESENHO ANEXADO:</b><br><img src="${fotoAtual}" style="max-width:100%;max-height:520px;border:1px solid #999;margin-top:5px"></div>`:''}
+    ${fotos[p.id]?`<img class="des" src="${fotos[p.id]}">`:'<p style="margin-top:10px;color:#a00">— sem desenho anexado —</p>'}
     <div style="margin-top:16px;display:flex;justify-content:space-between;font-size:12px;color:#555">
-      <span>Conferido por: ________________________</span><span>Data: ____/____/______</span><span>CivilNobre Engenharia</span>
+      <span>Conferido por: ______________________</span><span>Data: ____/____/______</span><span>CivilNobre Engenharia</span>
     </div>`;
   window.print();
 }
@@ -874,7 +508,7 @@ function imprimirFicha(){
 /* ================= RESUMO WHATSAPP ================= */
 function resumoWhats(){
   const lista = filtrados();
-  if(!lista.length){ alert('Nenhuma peça nos filtros atuais.'); return; }
+  if(!lista.length){ alert('Nenhuma peça.'); return; }
   const frases = {'A pedir':'A pedir ⏳','Pedido':'Pedido enviado','Comprado':'Comprado','Fabricado':'Fabricado','Entregue':'Entregue na obra','Instalado':'Instalado','Conferido':'Conferido ✅'};
   const hoje = new Date().toLocaleDateString('pt-BR');
   const porObra = {};
@@ -888,9 +522,9 @@ function resumoWhats(){
     Object.keys(porUn).sort().forEach(un=>{
       txt += `*${un}*\n`;
       porUn[un].forEach(p=>{
-        const pedra = p.nomePedra||p.tipoPedra||'';
         const qtd = (p.qtd||1)>1 ? ` x${p.qtd}` : '';
-        txt += `• ${p.tipoPeca}${p.ambiente?' '+p.ambiente:''}${qtd}${pedra?' ('+pedra+')':''} — ${frases[p.status]||p.status}\n`;
+        const cor = corDe(p);
+        txt += `• ${p.tipoPeca||'Peça'}${p.ambiente?' '+p.ambiente:''}${qtd}${cor?' ('+cor+')':''} — ${frases[p.status]||p.status}\n`;
       });
       txt += '\n';
     });
@@ -900,83 +534,109 @@ function resumoWhats(){
   });
   txt = txt.trim();
   const copiar = t => {
-    if(navigator.clipboard && navigator.clipboard.writeText){
-      navigator.clipboard.writeText(t).then(()=>alert('Resumo copiado! É só colar no WhatsApp.')).catch(()=>prompt('Copie o resumo:', t));
-    } else prompt('Copie o resumo:', t);
+    if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(()=>alert('Resumo copiado! É só colar no WhatsApp.')).catch(()=>prompt('Copie:',t));
+    else prompt('Copie:',t);
   };
   if(navigator.share){ navigator.share({text:txt}).catch(()=>copiar(txt)); } else copiar(txt);
 }
 
-/* ================= RENDERIZAÇÃO ================= */
+/* ================= RENDER ================= */
 function filtrados(){
-  const fo=$('fObra').value,ft=$('fTipo').value,fs=$('fStatus').value,fb_=$('fBusca').value.toLowerCase();
+  const b = $('fBusca').value.toLowerCase();
   return Object.values(pedidos).filter(p=>{
-    if(fo&&p.obra!==fo)return false;
-    if(ft&&p.tipoPeca!==ft)return false;
-    if(fs&&p.status!==fs)return false;
-    if(fb_){
-      const alvo=[p.obra,p.unidade,p.ambiente,p.tipoPeca,p.nomePedra,p.tipoPedra,p.obs].join(' ').toLowerCase();
-      if(!alvo.includes(fb_))return false;
-    }
-    return true;
-  }).sort((a,b)=>(b.atualizadoEm||'').localeCompare(a.atualizadoEm||''));
+    if(!b) return true;
+    return [p.obra,p.unidade,p.ambiente,p.tipoPeca,corDe(p),p.obs].join(' ').toLowerCase().includes(b);
+  });
 }
+let renderAdiado = false;
 function render(){
-  // filtro de obras
-  const obras=[...new Set(Object.values(pedidos).map(p=>p.obra).filter(Boolean))].sort();
-  const selObra=$('fObra');const val=selObra.value;
-  selObra.innerHTML='<option value="">Todas</option>'+obras.map(o=>`<option>${esc(o)}</option>`).join('');
-  selObra.value=val;
-  $('dlObras').innerHTML=obras.map(o=>`<option>${esc(o)}</option>`).join('');
+  const foco = document.activeElement;
+  const digitando = foco && /^(INPUT|SELECT|TEXTAREA)$/.test(foco.tagName) && foco.closest && (foco.closest('#planilha') || foco.closest('#veuAnexo'));
+  if(digitando){ renderAdiado = true; return; }
+  const lista = filtrados();
+  const porObra = {};
+  lista.forEach(p=>{ const o=p.obra||'Sem obra'; (porObra[o]=porObra[o]||[]).push(p); });
+  const obras = Object.keys(porObra).sort();
 
-  const lista=filtrados();
-  // QUADRO
-  const q=$('quadro');
-  q.innerHTML=STATUS.map(st=>{
-    const doStatus=lista.filter(p=>p.status===st);
-    const cards=doStatus.map(p=>{
-      const i=STATUS.indexOf(st);
-      return `<div class="cartao" style="border-left-color:${CORES_STATUS[st]}" onclick="abrirPeca('${p.id}')">
-        <div class="tp">${esc(p.tipoPeca)}${(p.qtd||1)>1?' ×'+p.qtd:''}${p.temDesenho?' 📎':''}</div>
-        <div class="ped">${esc(p.nomePedra||p.tipoPedra||'')} · ${esc(p.ambiente||'')}${p.unidade?' · '+esc(p.unidade):''}</div>
-        <span class="dim">${p.comprimento||'?'} × ${p.largura||'?'} cm</span>
-        <div class="rodape">
-          <span class="obra">${esc(p.obra||'')}</span>
-          <span style="display:flex;gap:5px">
-            <button class="btn borda mini" title="Duplicar peça (copiar especificações)" onclick="duplicarPeca('${p.id}',event)">⧉</button>
-            ${i<STATUS.length-1?`<button class="btn ouro mini" title="Avançar para ${STATUS[i+1]}" onclick="avancarStatus('${p.id}',event)">→ ${STATUS[i+1]}</button>`:'<span style="font-size:16px">✅</span>'}
-          </span>
-        </div></div>`;
+  /* ---- planilha ---- */
+  const pl = $('planilha');
+  if(!obras.length){
+    pl.innerHTML = '<div class="vazio">Nenhuma obra ainda. Clique em <b>＋ Nova obra</b> para começar.</div>';
+  } else {
+    pl.innerHTML = obras.map(obra=>{
+      const ps = porObra[obra].sort((a,b)=>(a.criadoEm||'').localeCompare(b.criadoEm||''));
+      const linhas = ps.map(p=>{
+        const banc = ehBancada(p);
+        const clip = fotos[p.id]||p.temDesenho ? 'tem' : (banc ? 'falta' : '');
+        const i = STATUS.indexOf(p.status);
+        return `<tr>
+          <td style="width:120px"><select data-id="${p.id}" data-campo="tipoPeca">${TIPOS.map(t=>`<option${t===p.tipoPeca?' selected':''}>${t}</option>`).join('')}</select></td>
+          <td><input data-id="${p.id}" data-campo="ambiente" value="${esc(p.ambiente)}" placeholder="Ex.: Cozinha, Janela quarto..."></td>
+          <td style="width:95px"><input data-id="${p.id}" data-campo="unidade" value="${esc(p.unidade)}" placeholder="Apto"></td>
+          <td style="width:150px"><input data-id="${p.id}" data-campo="cor" value="${esc(corDe(p))}" placeholder="Cor / pedra"></td>
+          ${banc
+            ? `<td colspan="2" style="width:150px;text-align:center"><span class="dica-bancada">medidas no desenho ➜</span></td>`
+            : `<td class="num" style="width:70px"><input type="number" step="0.5" min="0" data-id="${p.id}" data-campo="comprimento" value="${p.comprimento||''}" placeholder="C"></td>
+               <td class="num" style="width:70px"><input type="number" step="0.5" min="0" data-id="${p.id}" data-campo="largura" value="${p.largura||''}" placeholder="L"></td>`}
+          <td class="num" style="width:64px"><input type="number" min="1" data-id="${p.id}" data-campo="qtd" value="${p.qtd||1}"></td>
+          <td style="width:44px;text-align:center"><button class="clip ${clip}" title="${clip==='falta'?'Bancada: desenho obrigatório!':'Desenho / observações'}" onclick="abrirAnexo('${p.id}')">📎</button></td>
+          <td style="width:125px"><select class="st" style="background:${CORES_STATUS[p.status]||'#888'}" data-id="${p.id}" data-campo="status">${STATUS.map(s=>`<option${s===p.status?' selected':''}>${s}</option>`).join('')}</select></td>
+          <td class="acoes">
+            ${i>=0&&i<STATUS.length-1?`<button title="Avançar para ${STATUS[i+1]}" onclick="avancar('${p.id}',event)">➡️</button>`:'✅'}
+            <button title="Duplicar" onclick="duplicar('${p.id}',event)">⧉</button>
+            <button title="Excluir" onclick="excluir('${p.id}',event)">🗑️</button>
+          </td>
+        </tr>`;
+      }).join('');
+      return `<div class="obra-bloco">
+        <div class="obra-cab"><b>${esc(obra)}</b><span class="qtd">${ps.reduce((a,p)=>a+(p.qtd||1),0)} pedra(s)</span>
+          <button class="btn ouro mini add" onclick="novaPeca('${esc(obra)}')">＋ peça</button></div>
+        <table>
+          <thead><tr><th>Peça</th><th>Ambiente</th><th>Unid.</th><th>Cor</th><th>C (cm)</th><th>L (cm)</th><th>Qtd</th><th>📎</th><th>Etapa</th><th></th></tr></thead>
+          <tbody>${linhas}</tbody>
+        </table>
+      </div>`;
     }).join('');
-    return `<div class="coluna"><h3><span style="color:${CORES_STATUS[st]}">● </span>${st}<span class="num">${doStatus.length}</span></h3>${cards||'<div style="color:#a9a390;font-size:12.5px;text-align:center;padding:10px">vazio</div>'}</div>`;
+  }
+
+  /* ---- kanban ---- */
+  const kb = $('kanban');
+  if(!obras.length){ kb.innerHTML = '<div class="vazio">Nenhuma obra ainda.</div>'; return; }
+  if(!obras.includes(obraKan)) obraKan = obras[0];
+  const chips = obras.map(o=>`<button class="ochip${o===obraKan?' ativa':''}" onclick="obraKan='${esc(o)}';render()">${esc(o)}</button>`).join('');
+  const ps = porObra[obraKan]||[];
+  const cols = STATUS.map(st=>{
+    const doSt = ps.filter(p=>p.status===st);
+    const cards = doSt.map(p=>{
+      const i = STATUS.indexOf(st);
+      return `<div class="cartao" style="border-left-color:${CORES_STATUS[st]}" onclick="abrirAnexo('${p.id}')">
+        <div class="tp">${esc(p.tipoPeca)} ${esc(p.ambiente||'')}${(p.qtd||1)>1?' ×'+p.qtd:''}${fotos[p.id]||p.temDesenho?' 📎':''}</div>
+        <div class="sub">${esc(corDe(p))||'—'}${!ehBancada(p)&&p.comprimento?` · ${p.comprimento}×${p.largura} cm`:''}${p.unidade?' · '+esc(p.unidade):''}</div>
+        <div class="rod"><span style="font-size:11px;color:var(--mut)">${esc(p.atualizadoPor||'')}</span>
+        ${i<STATUS.length-1?`<button class="btn ouro mini" onclick="avancar('${p.id}',event)">→ ${STATUS[i+1]}</button>`:'<span>✅</span>'}</div>
+      </div>`;
+    }).join('');
+    return `<div class="coluna"><h3><span style="color:${CORES_STATUS[st]}">●</span> ${st}<span class="num">${doSt.length}</span></h3>${cards||'<div style="color:#a9a390;font-size:12px;text-align:center;padding:8px">vazio</div>'}</div>`;
   }).join('');
-
-  // LISTA
-  const l=$('lista');
-  if(!lista.length){ l.innerHTML='<div class="vazio">Nenhuma peça encontrada. Clique em <b>＋ Nova peça</b> para começar.</div>'; return; }
-  l.innerHTML=`<table><thead><tr><th>Obra</th><th>Unid.</th><th>Ambiente</th><th>Peça</th><th>Pedra</th><th>Medidas (cm)</th><th>Status</th><th>Atualizado</th></tr></thead><tbody>`+
-    lista.map(p=>`<tr onclick="abrirPeca('${p.id}')">
-      <td>${esc(p.obra)}</td><td>${esc(p.unidade)||'—'}</td><td>${esc(p.ambiente)||'—'}</td>
-      <td><b>${esc(p.tipoPeca)}</b>${(p.qtd||1)>1?' ×'+p.qtd:''}</td>
-      <td>${esc(p.nomePedra||p.tipoPedra||'')}</td>
-      <td>${p.comprimento||'?'} × ${p.largura||'?'} × ${p.espessura||'?'}</td>
-      <td><span class="tag" style="background:${CORES_STATUS[p.status]||'#888'}">${esc(p.status)}</span></td>
-      <td style="color:var(--mut);font-size:12px">${fmtData(p.atualizadoEm)}<br>${esc(p.atualizadoPor||p.criadoPor||'')}</td>
-    </tr>`).join('')+'</tbody></table>';
+  kb.innerHTML = `<div class="obra-chips">${chips}</div><div class="colunas">${cols}</div>`;
 }
-function trocarAba(qual){
-  $('abaQuadro').classList.toggle('ativa',qual==='quadro');
-  $('abaLista').classList.toggle('ativa',qual==='lista');
-  $('quadro').style.display=qual==='quadro'?'flex':'none';
-  $('lista').style.display=qual==='lista'?'block':'none';
+document.addEventListener('focusout', ()=>{ if(renderAdiado){ renderAdiado=false; setTimeout(render,60); } });
+document.addEventListener('change', e=>{
+  const el = e.target;
+  if(el.dataset && el.dataset.id && el.dataset.campo) atualizarCampo(el.dataset.id, el.dataset.campo, el.value);
+});
+function trocarAba(q){
+  $('abaPlan').classList.toggle('ativa', q==='plan');
+  $('abaKan').classList.toggle('ativa', q==='kan');
+  $('planilha').style.display = q==='plan'?'block':'none';
+  $('kanban').style.display = q==='kan'?'block':'none';
 }
 
-/* ================= INICIALIZAÇÃO ================= */
-preencherSelects();
-$('nomeUser').textContent=usuario||'definir';
+/* ================= INÍCIO ================= */
+$('nomeUser').textContent = usuario || 'definir';
 render();
 iniciarSync();
-setTimeout(()=>pedirNome(false),600);
+setTimeout(()=>pedirNome(false), 600);
 </script>
 </body>
 </html>
