@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>CivilNobre · Pedidos de Granito</title>
-<link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="icon" href="logo.png" type="image/png">
 <style>
 :root{
   --navy:#022057; --gold:#CF9F4D; --bg:#f4f2ec; --line:#ddd6c6; --txt:#22293a; --mut:#7a8199; --danger:#c0392b;
@@ -79,6 +79,19 @@ td.num input{text-align:center;font-variant-numeric:tabular-nums}
 .cartao .sub{color:var(--mut);font-size:12px;margin:2px 0 6px}
 .cartao .rod{display:flex;justify-content:space-between;align-items:center}
 
+/* ===== Mapa ===== */
+#mapa{padding:8px 14px 30px;overflow-x:auto}
+.mapa-tab{border-collapse:collapse;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.07);min-width:520px}
+.mapa-tab th{position:sticky;top:0}
+.mapa-tab td{text-align:center}
+.mapa-tab td.item{text-align:left;white-space:nowrap;font-weight:600;color:var(--navy);font-size:13px}
+.mapa-tab .grupo td{background:var(--gold);color:#fff;font-weight:700;text-align:left;font-size:12px;letter-spacing:1px;text-transform:uppercase;padding:4px 8px}
+.mchip{border:none;border-radius:6px;color:#fff;font-weight:700;font-size:11px;padding:4px 8px;min-width:76px}
+.mfalta{border:1.5px dashed #c9705f;background:#fdf0ee;color:#c0392b;border-radius:6px;font-weight:700;font-size:11.5px;padding:3px 8px;min-width:76px}
+.mna{color:#c8c2b2;font-size:15px}
+.mapa-topo{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0}
+.mapa-topo .res{font-size:13px;color:var(--mut)}
+
 /* ===== Modais ===== */
 .veu{position:fixed;inset:0;background:rgba(10,20,40,.55);display:none;z-index:100;overflow-y:auto;padding:18px 10px}
 .veu.aberto{display:block}
@@ -109,7 +122,7 @@ td.num input{text-align:center;font-variant-numeric:tabular-nums}
 <body>
 
 <header>
-  <img src="logo.svg" alt="CivilNobre">
+  <img src="logo.png" alt="CivilNobre">
   <div class="titulo"><b>Pedidos de Granito</b><span>CivilNobre · etapas por obra</span></div>
   <div class="dir">
     <span class="chip"><span class="dot" id="dotSync"></span><span id="txtSync">Conectando...</span></span>
@@ -124,12 +137,14 @@ td.num input{text-align:center;font-variant-numeric:tabular-nums}
   <div class="abas">
     <button class="aba ativa" id="abaPlan" onclick="trocarAba('plan')">📋 Planilha</button>
     <button class="aba" id="abaKan" onclick="trocarAba('kan')">📌 Etapas</button>
+    <button class="aba" id="abaMapa" onclick="trocarAba('mapa')">🗺️ Mapa</button>
     <button class="aba zap" onclick="resumoWhats()">📲 Resumo</button>
   </div>
 </div>
 
 <div id="planilha"></div>
 <div id="kanban" style="display:none"></div>
+<div id="mapa" style="display:none"></div>
 
 <!-- ===== MODAL: DESENHO / DETALHE ===== -->
 <div class="veu" id="veuAnexo">
@@ -422,6 +437,13 @@ function avancar(id, ev){
   }
   atualizarCampo(id, 'status', STATUS[i+1]);
 }
+function retroceder(id, ev){
+  if(ev) ev.stopPropagation();
+  const p = pedidos[id]; if(!p) return;
+  const i = STATUS.indexOf(p.status);
+  if(i<=0) return;
+  atualizarCampo(id, 'status', STATUS[i-1]);
+}
 function duplicar(id, ev){
   if(ev) ev.stopPropagation();
   const orig = pedidos[id]; if(!orig) return;
@@ -491,7 +513,7 @@ function salvarObs(){ if(anexoId) atualizarCampo(anexoId,'obs',$('anexoObs').val
 function imprimirFicha(){
   const p = anexoId ? pedidos[anexoId] : null; if(!p) return;
   $('areaImpressao').innerHTML = `
-    <div class="cab"><img src="logo.svg"><div style="text-align:right"><b style="font-size:16px;color:#022057">FICHA — ${esc(p.tipoPeca)} ${esc(p.ambiente||'')}</b><br><span style="color:#666">Obra ${esc(p.obra)} · ${new Date().toLocaleDateString('pt-BR')} · ${esc(usuario||'')}</span></div></div>
+    <div class="cab"><img src="logo.png"><div style="text-align:right"><b style="font-size:16px;color:#022057">FICHA — ${esc(p.tipoPeca)} ${esc(p.ambiente||'')}</b><br><span style="color:#666">Obra ${esc(p.obra)} · ${new Date().toLocaleDateString('pt-BR')} · ${esc(usuario||'')}</span></div></div>
     <table style="width:100%;border-collapse:collapse">
       <tr><th>Obra</th><th>Unid.</th><th>Peça</th><th>Cor</th><th>Medidas</th><th>Qtd</th><th>Status</th></tr>
       <tr><td>${esc(p.obra)}</td><td>${esc(p.unidade)||'—'}</td><td>${esc(p.tipoPeca)} ${esc(p.ambiente||'')}</td><td>${esc(corDe(p))||'—'}</td>
@@ -540,6 +562,81 @@ function resumoWhats(){
   if(navigator.share){ navigator.share({text:txt}).catch(()=>copiar(txt)); } else copiar(txt);
 }
 
+/* ================= MAPA GERAL ================= */
+const MAPA_PADRAO = [
+  ['Bancada','Cozinha'],['Bancada','Área gourmet'],['Bancada','Lavabo'],['Bancada','Área de serviço'],
+  ['Bancada','Suíte 1'],['Bancada','Suíte 2'],['Bancada','Suíte master'],
+  ['Peitoril','Cozinha'],['Peitoril','Varanda gourmet'],['Peitoril','Quarto 1'],['Peitoril','Quarto 2'],
+  ['Peitoril','Quarto 3'],['Peitoril','Banheiro'],
+  ['Soleira','Entrada'],['Soleira','Varanda gourmet'],['Soleira','Banheiros'],['Soleira','Área de serviço'],
+  ['Portal','Área de serviço']
+];
+const norm = s => String(s||'').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+function criarDoMapa(obra, unidade, tipo, ambiente){
+  pedirNome();
+  const p = {id:novoId(), obra, unidade, ambiente, tipoPeca:tipo, cor:'', comprimento:0, largura:0, qtd:1,
+    temDesenho:false, obs:'', status:'A pedir', criadoEm:agora(), criadoPor:usuario, atualizadoEm:agora(), atualizadoPor:usuario,
+    historico:[{status:'A pedir', data:agora(), por:usuario}]};
+  pedidos[p.id]=p; salvarLocal(); pushRemoto(p); render();
+}
+function gerarApto(obra){
+  pedirNome();
+  const un = prompt('Número/nome do apartamento:\nEx.: Apto 101');
+  if(!un) return;
+  const ps = Object.values(pedidos).filter(p=>p.obra===obra && norm(p.unidade)===norm(un));
+  let n = 0;
+  MAPA_PADRAO.forEach(([tipo,amb])=>{
+    const ja = ps.some(p=>p.tipoPeca===tipo && norm(p.ambiente)===norm(amb));
+    if(!ja){ criarDoMapa(obra, un.trim(), tipo, amb); n++; }
+  });
+  alert(n+' itens do padrão criados para '+un+'.\nPreencha cor e medidas na Planilha e exclua o que esse apto não tiver.');
+}
+function renderMapa(porObra, obras){
+  const mp = $('mapa');
+  if(!obras.length){ mp.innerHTML = '<div class="vazio">Nenhuma obra ainda.</div>'; return; }
+  if(!obras.includes(obraKan)) obraKan = obras[0];
+  const chips = obras.map(o=>`<button class="ochip${o===obraKan?' ativa':''}" onclick="obraKan='${esc(o)}';render()">${esc(o)}</button>`).join('');
+  const ps = porObra[obraKan]||[];
+  const unidades = [...new Set(ps.map(p=>p.unidade).filter(Boolean))].sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
+  let html = `<div class="obra-chips">${chips}</div>
+    <div class="mapa-topo"><button class="btn ouro mini" onclick="gerarApto('${esc(obraKan)}')">＋ Gerar apto (lista padrão)</button>
+    <span class="res">Verde a cinza = etapa · <b style="color:#c0392b">falta ＋</b> = ainda não lançado (clique para criar) · vá excluindo na Planilha o que o apto não tiver</span></div>`;
+  if(!unidades.length){
+    html += '<div class="vazio">Nenhum apartamento nesta obra ainda. Clique em <b>＋ Gerar apto</b> para lançar a lista padrão de uma vez.</div>';
+    mp.innerHTML = html; return;
+  }
+  const acha = (u,tipo,amb) => ps.find(p=>norm(p.unidade)===norm(u) && p.tipoPeca===tipo && norm(p.ambiente)===norm(amb));
+  let corpo = '', grupoAtual = '';
+  MAPA_PADRAO.forEach(([tipo,amb])=>{
+    if(tipo!==grupoAtual){ grupoAtual = tipo; const plural = {Bancada:'Bancadas',Peitoril:'Peitoris',Soleira:'Soleiras',Portal:'Portais'}[tipo]||tipo; corpo += `<tr class="grupo"><td colspan="${unidades.length+1}">${plural}</td></tr>`; }
+    corpo += `<tr><td class="item">${tipo} ${amb}</td>` + unidades.map(u=>{
+      const p = acha(u,tipo,amb);
+      if(p) return `<td><button class="mchip" style="background:${CORES_STATUS[p.status]||'#888'}" title="${esc(p.status)} — clique para abrir" onclick="abrirAnexo('${p.id}')">${esc(p.status)}</button></td>`;
+      return `<td><button class="mfalta" title="Criar ${tipo} ${amb} no ${esc(u)}" onclick="criarDoMapa('${esc(obraKan)}','${esc(u)}','${tipo}','${esc(amb)}')">falta ＋</button></td>`;
+    }).join('') + '</tr>';
+  });
+  // itens fora do padrão
+  const extras = ps.filter(p=>p.unidade && !MAPA_PADRAO.some(([t,a])=>p.tipoPeca===t && norm(p.ambiente)===norm(a)));
+  if(extras.length){
+    corpo += `<tr class="grupo"><td colspan="${unidades.length+1}">Outros itens</td></tr>`;
+    const chaves = [...new Set(extras.map(p=>p.tipoPeca+'|'+p.ambiente))];
+    chaves.forEach(ch=>{
+      const [tipo,amb] = ch.split('|');
+      corpo += `<tr><td class="item">${esc(tipo)} ${esc(amb)}</td>` + unidades.map(u=>{
+        const p = extras.find(x=>norm(x.unidade)===norm(u) && x.tipoPeca===tipo && x.ambiente===amb);
+        return p ? `<td><button class="mchip" style="background:${CORES_STATUS[p.status]||'#888'}" onclick="abrirAnexo('${p.id}')">${esc(p.status)}</button></td>` : '<td><span class="mna">·</span></td>';
+      }).join('') + '</tr>';
+    });
+  }
+  // totais
+  corpo += `<tr><td class="item" style="background:#e9e3d3">Lançados</td>` + unidades.map(u=>{
+    const tem = MAPA_PADRAO.filter(([t,a])=>acha(u,t,a)).length;
+    return `<td style="background:#e9e3d3;font-weight:700;color:${tem===MAPA_PADRAO.length?'#1e8e4e':'#c0392b'}">${tem}/${MAPA_PADRAO.length}</td>`;
+  }).join('') + '</tr>';
+  html += `<table class="mapa-tab"><thead><tr><th>Item padrão</th>${unidades.map(u=>`<th>${esc(u)}</th>`).join('')}</tr></thead><tbody>${corpo}</tbody></table>`;
+  mp.innerHTML = html;
+}
+
 /* ================= RENDER ================= */
 function filtrados(){
   const b = $('fBusca').value.toLowerCase();
@@ -582,6 +679,7 @@ function render(){
           <td style="width:44px;text-align:center"><button class="clip ${clip}" title="${clip==='falta'?'Bancada: desenho obrigatório!':'Desenho / observações'}" onclick="abrirAnexo('${p.id}')">📎</button></td>
           <td style="width:125px"><select class="st" style="background:${CORES_STATUS[p.status]||'#888'}" data-id="${p.id}" data-campo="status">${STATUS.map(s=>`<option${s===p.status?' selected':''}>${s}</option>`).join('')}</select></td>
           <td class="acoes">
+            ${i>0?`<button title="Voltar para ${STATUS[i-1]}" onclick="retroceder('${p.id}',event)">⬅️</button>`:''}
             ${i>=0&&i<STATUS.length-1?`<button title="Avançar para ${STATUS[i+1]}" onclick="avancar('${p.id}',event)">➡️</button>`:'✅'}
             <button title="Duplicar" onclick="duplicar('${p.id}',event)">⧉</button>
             <button title="Excluir" onclick="excluir('${p.id}',event)">🗑️</button>
@@ -599,6 +697,9 @@ function render(){
     }).join('');
   }
 
+  /* ---- mapa ---- */
+  renderMapa(porObra, obras);
+
   /* ---- kanban ---- */
   const kb = $('kanban');
   if(!obras.length){ kb.innerHTML = '<div class="vazio">Nenhuma obra ainda.</div>'; return; }
@@ -612,7 +713,8 @@ function render(){
       return `<div class="cartao" style="border-left-color:${CORES_STATUS[st]}" onclick="abrirAnexo('${p.id}')">
         <div class="tp">${esc(p.tipoPeca)} ${esc(p.ambiente||'')}${(p.qtd||1)>1?' ×'+p.qtd:''}${fotos[p.id]||p.temDesenho?' 📎':''}</div>
         <div class="sub">${esc(corDe(p))||'—'}${!ehBancada(p)&&p.comprimento?` · ${p.comprimento}×${p.largura} cm`:''}${p.unidade?' · '+esc(p.unidade):''}</div>
-        <div class="rod"><span style="font-size:11px;color:var(--mut)">${esc(p.atualizadoPor||'')}</span>
+        <div class="rod"><span style="display:flex;gap:4px">
+          ${i>0?`<button class="btn borda mini" title="Voltar para ${STATUS[i-1]}" onclick="retroceder('${p.id}',event)">←</button>`:''}</span>
         ${i<STATUS.length-1?`<button class="btn ouro mini" onclick="avancar('${p.id}',event)">→ ${STATUS[i+1]}</button>`:'<span>✅</span>'}</div>
       </div>`;
     }).join('');
@@ -628,8 +730,10 @@ document.addEventListener('change', e=>{
 function trocarAba(q){
   $('abaPlan').classList.toggle('ativa', q==='plan');
   $('abaKan').classList.toggle('ativa', q==='kan');
+  $('abaMapa').classList.toggle('ativa', q==='mapa');
   $('planilha').style.display = q==='plan'?'block':'none';
   $('kanban').style.display = q==='kan'?'block':'none';
+  $('mapa').style.display = q==='mapa'?'block':'none';
 }
 
 /* ================= INÍCIO ================= */
