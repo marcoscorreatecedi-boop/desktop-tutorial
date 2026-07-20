@@ -130,7 +130,7 @@ td.num input{text-align:center;font-variant-numeric:tabular-nums}
   <img src="logo.png" alt="CivilNobre">
   <div class="titulo"><b>Pedidos de Granito</b><span>CivilNobre · etapas por obra</span></div>
   <div class="dir">
-    <span class="chip"><span class="dot" id="dotSync"></span><span id="txtSync">Conectando...</span></span>
+    <span class="chip" id="chipSync" style="cursor:pointer" title="Toque para sincronizar agora" onclick="if(typeof ntfyTentar==='function'&&!fb)ntfyTentar()"><span class="dot" id="dotSync"></span><span id="txtSync">Conectando...</span></span>
     <span class="chip" id="chipUser" style="cursor:pointer">👤 <span id="nomeUser">—</span></span>
     <button class="btn claro" onclick="abrirSync()">⚙️</button>
     <button class="btn ouro" onclick="novaObra()">＋ Nova obra</button>
@@ -294,7 +294,21 @@ function pushFoto(id){
     for(let i=0;i<total;i++) setTimeout(()=> ntPub({t:'fotoc', id, i, d:d.slice(i*CH,(i+1)*CH)}), 300+i*250);
   }
 }
-function ntPub(obj){ try{ fetch(NTFY,{method:'POST',body:JSON.stringify(obj)}).catch(()=>{}); }catch(e){} }
+/* Fila de envio: nada se perde se a nuvem estiver fora no momento do salvamento */
+let filaNt = JSON.parse(localStorage.getItem('cn_fila') || '[]');
+function salvarFila(){ localStorage.setItem('cn_fila', JSON.stringify(filaNt.slice(-500))); }
+function ntPub(obj){
+  try{
+    fetch(NTFY, {method:'POST', body: JSON.stringify(obj)})
+      .then(r=>{ if(!r.ok) throw new Error('http '+r.status); })
+      .catch(()=>{ filaNt.push(obj); salvarFila(); });
+  }catch(e){ filaNt.push(obj); salvarFila(); }
+}
+function drenarFila(){
+  if(!filaNt.length) return;
+  const copia = filaNt; filaNt = []; salvarFila();
+  copia.forEach((o,i)=> setTimeout(()=> ntPub(o), i*150));
+}
 let ultimoGossip = 0;
 const fotoBuffers = {};
 function ntAplicar(msg){
@@ -325,19 +339,27 @@ function ntAplicar(msg){
     }, 400+Math.random()*1500);
   }
 }
-let ntOk = false, ntHelloFeito = false;
+let ntOk = false, ntHelloFeito = false, ntSincronizando = false;
+let ntDesde = Math.floor(Date.now()/1000) - 12*3600; // começa pegando as últimas 12h
+const horaAgora = () => new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
 async function ntfyTentar(){
+  if(ntSincronizando) return;
+  ntSincronizando = true;
   try{
-    const r = await fetch(NTFY+'/json?poll=1&since=12h');
+    const marca = Math.floor(Date.now()/1000);
+    const r = await fetch(NTFY+'/json?poll=1&since='+ntDesde, {cache:'no-store'});
     if(!r.ok) throw new Error('http '+r.status);
     (await r.text()).split('\n').filter(Boolean).forEach(l=>{ try{ const ev=JSON.parse(l); if(ev.event==='message') ntAplicar(ev.message); }catch(e){} });
+    ntDesde = marca - 90; // 90s de sobreposição para não perder nada (reaplicar é inofensivo)
     ntOk = true;
-    setSync('on','Sincronizado ✓');
+    setSync('on','Sincronizado ✓ '+horaAgora());
+    drenarFila();
     if(!ntHelloFeito){ ntHelloFeito = true; ntPub({t:'hello', de:clienteId}); }
   }catch(e){
     ntOk = false;
     setSync('erro','Reconectando... (dados salvos aqui)');
   }
+  ntSincronizando = false;
 }
 function iniciarNtfy(){
   setSync('off','Conectando...');
@@ -345,11 +367,12 @@ function iniciarNtfy(){
   try{
     const es = new EventSource(NTFY+'/sse');
     es.onmessage = e => { try{ const ev=JSON.parse(e.data); if(ev.message) ntAplicar(ev.message); }catch(err){} };
-    es.onopen = () => { if(!ntOk) ntfyTentar(); else setSync('on','Sincronizado ✓'); };
+    es.onopen = () => { if(!ntOk) ntfyTentar(); };
     es.onerror = () => { if(!ntOk) setSync('erro','Reconectando... (dados salvos aqui)'); };
   }catch(e){ console.error(e); }
-  // tenta de novo sozinho: a cada 20s se cair, ao voltar a internet e ao voltar para o app
-  setInterval(()=>{ if(!ntOk) ntfyTentar(); }, 20000);
+  // busca novidades a cada 15s SEMPRE (mesmo com o canal ao vivo bloqueado pela operadora),
+  // e também ao voltar a internet ou reabrir o app
+  setInterval(ntfyTentar, 15000);
   window.addEventListener('online', ntfyTentar);
   document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible') ntfyTentar(); });
 }
