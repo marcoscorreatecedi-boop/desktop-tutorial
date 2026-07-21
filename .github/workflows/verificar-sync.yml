@@ -18,21 +18,68 @@ jobs:
           grep -q "Pedidos de Granito" site.html
           grep -q "drenarFila" site.html
           grep -q "pecaParaEnvio" site.html
+          grep -q "const RELAYS" site.html
           echo "SITE OK — no ar e com a versão mais recente"
 
-      - name: Nuvem de sincronizacao publica e entrega mensagens
+      - name: JavaScript publicado nao tem erro de referencia (roda de verdade)
+        run: |
+          node -e "
+            const fs = require('fs');
+            const html = fs.readFileSync('site.html','utf8');
+            const m = html.match(/<script>([\s\S]*)<\/script>/);
+            if (!m) throw new Error('script não encontrado no HTML publicado');
+            // ambiente mínimo de navegador para o script inicializar sem quebrar
+            global.window = { addEventListener(){}, location:{hash:''} };
+            global.document = { getElementById: () => ({ style:{}, classList:{toggle(){},add(){},remove(){},contains(){return false}}, addEventListener(){}, value:'', textContent:'', innerHTML:'' }),
+              addEventListener(){}, visibilityState:'visible', activeElement:null, createElement:()=>({}) };
+            global.localStorage = { data:{}, getItem(k){return this.data[k]??null}, setItem(k,v){this.data[k]=String(v)}, removeItem(k){delete this.data[k]} };
+            global.navigator = { clipboard:{writeText:()=>Promise.resolve()}, onLine:true, share:undefined };
+            global.fetch = () => Promise.reject(new Error('sem rede neste teste — só queremos ver se o script INICIALIZA sem ReferenceError'));
+            global.EventSource = function(){ this.close=()=>{} };
+            global.location = { hash:'', origin:'x', pathname:'y' };
+            global.history = { replaceState(){} };
+            global.prompt = () => null;
+            global.alert = () => {};
+            global.confirm = () => true;
+            global.AbortController = function(){ this.signal={}; this.abort=()=>{}; };
+            global.setInterval = () => 0;
+            global.Image = function(){};
+            try {
+              eval(m[1]);
+              console.log('JS INICIALIZOU SEM ReferenceError/TypeError — RELAYS e TOPICO existem e estão em uso');
+            } catch(e) {
+              console.error('FALHA NA INICIALIZAÇÃO:', e.message);
+              process.exit(1);
+            }
+          "
+
+      - name: Nuvem de sincronizacao (3 servidores) publica e entrega mensagens
         run: |
           TOPIC="civilnobre-granito-mq7x2v9k4t"
-          MARCA="verificacao-$(date +%s)-$RANDOM"
-          # publica como o app publica
-          curl -fsS -d "{\"t\":\"verificacao\",\"m\":\"$MARCA\"}" "https://ntfy.sh/$TOPIC" > /dev/null
-          sleep 3
-          # lê como o app lê (poll incremental)
-          curl -fsS "https://ntfy.sh/$TOPIC/json?poll=1&since=2m" | grep -q "$MARCA"
-          echo "NUVEM OK — mensagem publicada e recebida de volta"
+          FALHOU=0
+          for RELAY in "https://ntfy.sh" "https://ntfy.envs.net" "https://ntfy.adminforge.de"; do
+            MARCA="verificacao-$(date +%s)-$RANDOM"
+            echo "--- testando $RELAY ---"
+            if curl -fsS --max-time 12 -d "{\"t\":\"verificacao\",\"m\":\"$MARCA\"}" "$RELAY/$TOPIC" > /dev/null 2>&1; then
+              sleep 3
+              if curl -fsS --max-time 12 "$RELAY/$TOPIC/json?poll=1&since=2m" 2>/dev/null | grep -q "$MARCA"; then
+                echo "$RELAY: OK (publicou e recebeu de volta)"
+              else
+                echo "$RELAY: publicou mas não recebeu de volta"; FALHOU=$((FALHOU+1))
+              fi
+            else
+              echo "$RELAY: falhou ao publicar (pode estar fora do ar — os outros 2 seguram)"; FALHOU=$((FALHOU+1))
+            fi
+          done
+          if [ "$FALHOU" -ge 3 ]; then echo "TODOS OS 3 SERVIDORES FALHARAM"; exit 1; fi
+          echo "NUVEM OK — pelo menos 1 dos 3 servidores respondeu"
 
-      - name: Canal ao vivo (SSE) responde
+      - name: Canal ao vivo (SSE) responde em pelo menos 1 servidor
         run: |
-          timeout 10 curl -fsSN "https://ntfy.sh/civilnobre-granito-mq7x2v9k4t/sse?since=1m" | head -c 200 > sse.out || true
-          test -s sse.out
-          echo "CANAL AO VIVO OK"
+          OK=0
+          for RELAY in "https://ntfy.sh" "https://ntfy.envs.net" "https://ntfy.adminforge.de"; do
+            timeout 8 curl -fsSN "$RELAY/civilnobre-granito-mq7x2v9k4t/sse?since=1m" 2>/dev/null | head -c 200 > sse.out || true
+            if [ -s sse.out ]; then echo "$RELAY: canal ao vivo OK"; OK=1; else echo "$RELAY: sem resposta"; fi
+          done
+          test "$OK" -eq 1
+          echo "CANAL AO VIVO OK em pelo menos 1 servidor"
